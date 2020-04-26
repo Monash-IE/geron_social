@@ -46,7 +46,9 @@ add_action( 'admin_init', function() {
 	
 });
 
-$ad_code='';
+$ad_code='
+
+';
 
 $hide_admin='on';
 $hide_logged_in='on';
@@ -65,7 +67,9 @@ function mont_page() {
        <?php
        settings_fields( 'mont-settings' );
        do_settings_sections( 'mont-settings' );
-$ad_code='';
+$ad_code='
+
+';
 
 $hide_admin='on';
 $hide_logged_in='on';
