@@ -31,12 +31,12 @@ class Ajax
      */
     public function __construct()
     {
-        add_action( 'wp_enqueue_scripts', [ &$this, 'frontend' ] );
-        add_action( "wp_ajax_buttonizer", [ &$this, 'frontendJson' ] );
-        add_action( "wp_ajax_nopriv_buttonizer", [ &$this, 'frontendJson' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'frontend' ] );
+        add_action( "wp_ajax_buttonizer", [ $this, 'frontendJson' ] );
+        add_action( "wp_ajax_nopriv_buttonizer", [ $this, 'frontendJson' ] );
         add_filter(
             'style_loader_tag',
-            [ &$this, 'fixPremiumIconLibraries' ],
+            [ $this, 'fixPremiumIconLibraries' ],
             10,
             2
         );
@@ -54,11 +54,23 @@ class Ajax
         // Is admin?
         $this->is_admin = current_user_can( 'editor' ) || current_user_can( 'administrator' );
         // Into preview
+        
         if ( $this->is_admin && isset( $_GET['buttonizer-preview'] ) ) {
             $this->goIntoPreview();
+            // Load page data
+            $this->pageData();
+        } else {
+            // Show the button without delay
+            
+            if ( isset( $this->settings['no_ajax'] ) && $this->settings['no_ajax'] === true ) {
+                wp_localize_script( "buttonizer_frontend_javascript", "buttonizer_data", ( new \Buttonizer\Api\Buttons\ApiButtons() )->get( true ) );
+            } else {
+                // Load page data
+                $this->pageData();
+            }
+        
         }
-        // Load page data
-        $this->pageData();
+        
         // Add some information
         wp_localize_script( 'buttonizer_frontend_javascript', 'buttonizer_ajax', [
             'ajaxurl'           => admin_url( 'admin-ajax.php' ),
@@ -70,7 +82,11 @@ class Ajax
             'in_preview'        => $this->in_preview,
             'is_admin'          => $this->is_admin,
             'cache'             => ( isset( $this->settings['cache_code'] ) ? $this->settings['cache_code'] : md5( 'buzzing_the_cache_code' ) ),
-            'enable_ga_clicks'  => !isset( $this->settings['google_analytics_enabled'] ) || $this->settings['google_analytics_enabled'] == 'true',
+            'enable_ga_clicks'  => ( isset( $this->settings['google_analytics_enabled'] ) ? filter_var( $this->settings['google_analytics_enabled'], FILTER_VALIDATE_BOOLEAN, [
+            'options' => [
+            'default' => true,
+        ],
+        ] ) : true ),
         ] );
         // Add Google Analytics
         
@@ -83,7 +99,7 @@ class Ajax
                 true
             );
             wp_enqueue_script( 'google_analytics' );
-            wp_add_inline_script( 'google_analytics', "\r\n window.dataLayer = window.dataLayer || [];\r\n function gtag(){dataLayer.push(arguments);}\r\n gtag('js', new Date());\r\n\r\n gtag('config', '" . $this->settings['google_analytics'] . "');" );
+            wp_add_inline_script( 'google_analytics', "\n window.dataLayer = window.dataLayer || [];\n function gtag(){dataLayer.push(arguments);}\n gtag('js', new Date());\n\n gtag('config', '" . $this->settings['google_analytics'] . "');" );
         }
     
     }
@@ -115,7 +131,7 @@ class Ajax
         foreach ( $filters as $filter ) {
             add_filter(
                 $filter,
-                [ &$this, 'updatePreviewLinks' ],
+                [ $this, 'updatePreviewLinks' ],
                 10,
                 3
             );
@@ -174,7 +190,6 @@ class Ajax
             false,
             true
         );
-        // Require Buttonizer CSS
         wp_register_style(
             'buttonizer_frontend_style',
             plugins_url( '/assets/frontend.css', BUTTONIZER_PLUGIN_DIR ) . '?v=' . md5( BUTTONIZER_VERSION ),
@@ -195,7 +210,7 @@ class Ajax
     private function importIconLibrary()
     {
         if ( !isset( $this->settings["import_icon_library"] ) ) {
-            $this->settings["import_icon_library"] = 'false';
+            $this->settings["import_icon_library"] = false;
         }
         // False by default
         if ( !isset( $this->settings["icon_library"] ) ) {
@@ -205,7 +220,7 @@ class Ajax
             $this->settings["icon_library_version"] = '5.free';
         }
         
-        if ( $this->settings["import_icon_library"] === "true" ) {
+        if ( filter_var( $this->settings['import_icon_library'], FILTER_VALIDATE_BOOLEAN ) === true ) {
             
             if ( $this->settings["icon_library_version"] === '5.free' ) {
                 wp_register_style(
@@ -249,38 +264,11 @@ class Ajax
     }
     
     /**
-     * Add the frontend
+     * Backup for if the API is disabled
      */
     public function frontendJson()
     {
-        /* Cache this response to the clients browser for 5 minutes */
-        header( 'Content-Type: application/javascript' );
-        header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + 3600 ) . " GMT" );
-        header( "Pragma: cache" );
-        header( "Cache-Control: max-age=3600" );
-        $this->loadSettings();
-        // Update if we need to do that
-        if ( !isset( $this->settings['migration_version'] ) || $this->settings['migration_version'] !== '2.0' ) {
-            ( new Update() )->run();
-        }
-        // Allow XHR requests from subdomains
-        
-        if ( isset( $this->settings['allow_subdomains'] ) && $this->settings['allow_subdomains'] == 'true' ) {
-            $siteUrl = parse_url( get_site_url() );
-            $currentUrl = parse_url( $_SERVER['HTTP_ORIGIN'] );
-            if ( isset( $siteUrl['host'] ) && isset( $currentUrl['host'] ) && $siteUrl['host'] === substr( $currentUrl['host'], strlen( $currentUrl['host'] ) - strlen( $siteUrl['host'] ) ) ) {
-                header( "Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN'] );
-            }
-        }
-        
-        // Output
-        wp_send_json( [
-            'plugin'  => 'buttonizer',
-            'status'  => 'success',
-            'result'  => ( new Buttonizer() )->returnArray(),
-            'warning' => Buttonizer::getLogs(),
-            'premium' => ButtonizerLicense()->can_use_premium_code(),
-        ] );
+        wp_send_json( ( new \Buttonizer\Api\Buttons\ApiButtons() )->get() );
     }
 
 }

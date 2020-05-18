@@ -113,7 +113,7 @@ if (!class_exists('MDTF_Pagination')) {
                     $output .= $this->paginate_loop(1, $pages, $page);
                 }
                 if ($page < $pages && !empty($nextpage)) {
-                    $output .= sprintf('<li><a title="%s" href="%s" class="next">%s</a></li>', ($page + 1), $nextlink, stripslashes($nextpage));
+                    $output .= sprintf('<li class="next_li"><a title="%s" href="%s" class="next">%s</a></li>', ($page + 1), $nextlink, stripslashes($nextpage));
                 }
                 $output .= "</ol>";
             }

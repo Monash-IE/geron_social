@@ -5,7 +5,7 @@ Tags: filter,products filter,taxonomies filter,meta filter,woocommerce,wordpress
 Requires at least: 4.1.0
 Tested up to: 5.4
 Requires PHP: 5.4
-Stable tag: 1.2.6.1
+Stable tag: 1.2.7
 
 The main idea of the plugin – make your WordPress site content is filterable and searchable by meta fields and taxonomies on the same time.
 
@@ -90,7 +90,7 @@ PHP 7.4.x – [FULL COMPATIBILITY](https://wp-filter.com/demo-sites/)!
 &#9989;&nbsp;[Wide API](https://wp-filter.com/codex/)
 
 
-[Get Premium version of WordPress Filter plugin on CODECANYON](https://codecanyon.net/item/wordpress-meta-data-taxonomies-filter/7002700?ref=realmag777)
+[Get Premium version of WordPress Filter plugin on CODECANYON](https://pluginus.net/affiliate/meta-data-taxonomies-filter)
 
 
 ### Videos:
@@ -166,6 +166,9 @@ R: [https://wp-filter.com/video-tutorials/](https://wp-filter.com/video-tutorial
 
 
 == Changelog ==
+
+= 1.2.7 =
+- [https://wp-filter.com/update-v-2-2-7-v-1-2-7/](https://wp-filter.com/update-v-2-2-7-v-1-2-7/)
 
 = 1.2.6.1 =
 - 1 little fix about hidden button in the filter form https://clip2net.com/s/424zy66

@@ -203,7 +203,9 @@ class MDF_POSTS_MESSENGER {
 
         $subscr = array();
         $subscr = get_user_meta($data['user_id'], $this->user_meta_key, true); //Get all data of the user
-
+        if(!is_array($subscr)){
+                $subscr =array();
+        }
         if (count($subscr) >= $this->subscr_count) {
             die('count is max'); // Check limit count on backend
         }
@@ -218,7 +220,7 @@ class MDF_POSTS_MESSENGER {
         } else {
             $data['date'] = $data['date'] + YEAR_IN_SECONDS * 10; // not limit*  10 years
         }
-
+        $subscr[$key]=array();
         $subscr[$key] = $data;
         update_user_meta($data['user_id'], $this->user_meta_key, $subscr); //add new item
         //for Ajax redraw
@@ -475,6 +477,7 @@ class MDF_POSTS_MESSENGER {
         $data = shortcode_atts(array(
             'in_filter' => 0
                 ), $atts);
+        ob_start();
         if (is_user_logged_in()) {
 
             $subscr_count = $this->subscr_count;
@@ -534,6 +537,7 @@ class MDF_POSTS_MESSENGER {
             </div>
             <?php
         }
+        return ob_get_clean();
     }
 
     public function sanitaz_array_r($arr) {

@@ -16,7 +16,7 @@
 				<?php printf(__('Export files are currently delimited by "%s". You can change the delimiter at <a href="%s">Chained Quiz Settings</a> page.', 'chained'), get_option('chained_csv_delim'), 'admin.php?page=chainedquiz_options');?> </p></p>
 		
 			
-			<div id="filterForm" style="display:<?php echo $display_filters?'block':'none';?>;margin-bottom:10px;padding:5px;" class="widefat">
+			<div id="filterForm" style='display:<?php echo $display_filters?'block':'none';?>;margin-bottom:10px;padding:5px;' class="widefat">
 			<form method="get" class="chained-form" action="admin.php">
 			<input type="hidden" name="page" value="chainedquiz_list">
 			<input type="hidden" name="quiz_id" value="<?php echo $quiz->id?>">
@@ -56,8 +56,8 @@
 						<?php endforeach;?>	
 				</select> </div>
 						
-				<div><input type="submit" value="<?php _e('Search/Filter', 'chained')?>">
-				<input type="button" value="<?php _e('Clear Filters', 'chained')?>" onclick="window.location='admin.php?page=chainedquiz_list&quiz_id=<?php echo $quiz->id;?>';"></div>
+				<div><input type="submit" value="<?php _e('Search/Filter', 'chained')?>" class="button button-primary">
+				<input type="button" value="<?php _e('Clear Filters', 'chained')?>" onclick="window.location='admin.php?page=chainedquiz_list&quiz_id=<?php echo $quiz->id;?>';" class="button"></div>
 			</form>
 			</div>	
 		

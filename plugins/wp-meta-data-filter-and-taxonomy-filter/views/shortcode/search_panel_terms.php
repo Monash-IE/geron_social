@@ -60,11 +60,15 @@ if (isset($filter_data['taxonomy'])) {
     }
 }
 
-if(!is_array($filter_data['filter_post_blocks'])){
+if(!$filter_data OR !is_array($filter_data['filter_post_blocks'])){
     $filter_data['filter_post_blocks']=array();
 }
 foreach ($filter_data['filter_post_blocks'] as $id) {
-    foreach (MetaDataFilterPage::get_html_items($id) as $key => $val) {
+    $html_items=MetaDataFilterPage::get_html_items($id);
+    if(!is_array($html_items)){
+        $html_items=array();
+    }
+    foreach ($html_items as $key => $val) {
 
         if (isset($filter_data[$key])) {
 //            echo$val['type'],"   ";

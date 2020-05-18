@@ -80,7 +80,7 @@
         <tr valign="top">
             <th scope="row" class="mdf_for_premium_label"><?php _e('Custom text for search results', 'meta-data-filter') ?><br /></th>
             <td>
-                <input type="text" class="widefat" placeholder="<?php _e('In premium version. Example: Found &lt;span&gt;%s&lt;/span&gt; items', 'meta-data-filter') ?>" value="" readonly=""><br />
+                <input type="text" class="widefat" placeholder="<?php _e('Example: Found &lt;span&gt;%s&lt;/span&gt; items. Premium version!', 'meta-data-filter') ?>" name="shortcode_options[options][show_items_count_text]" readonly="" value=""><br />
             </td>
         </tr>
         <tr valign="top">
@@ -92,7 +92,8 @@
         <tr valign="top">
             <th scope="row" class="mdf_for_premium_label"><?php _e('Auto submit', 'meta-data-filter') ?><br /></th>
             <td>
-                <input type="checkbox" class="mdf_shortcode_options" disabled=""  /> (<a href="https://wp-filter.com/difference-free-premium-versions-plugin/" target="_blank">in premium version</a>)<br />
+                <input type="hidden" name="shortcode_options[options][auto_submit]" value="0">
+                <input type="checkbox" class="mdf_shortcode_options" disabled="" /> <br />
             </td>
         </tr>
         <tr valign="top">
@@ -121,7 +122,8 @@
         <tr valign="top">
             <th scope="row" class="mdf_for_premium_label"><?php _e('Hide items where count is 0', 'meta-data-filter') ?><br /></th>
             <td>
-                <input type="checkbox" class="mdf_shortcode_options" disabled="" /> (<a href="https://wp-filter.com/difference-free-premium-versions-plugin/" target="_blank">in premium version</a>)<br />
+                <input type="hidden" name="shortcode_options[options][hide_items_where_count_0]" value="0">
+                <input type="checkbox" class="mdf_shortcode_options" disabled="" /> <br />
             </td>
         </tr>
 
@@ -142,7 +144,7 @@
         <tr valign="top">
             <th scope="row" class="mdf_for_premium_label"><?php _e('Filter button text', 'meta-data-filter') ?><br /></th>
             <td>
-                <input type="text" class="widefat" value="" readonly="" placeholder="in premium version"><br />
+                <input type="text" class="widefat" name="shortcode_options[options][filter_button_text]" readonly="" placeholder="in premium version" value=""><br />
             </td>
         </tr>
         <tr valign="top">

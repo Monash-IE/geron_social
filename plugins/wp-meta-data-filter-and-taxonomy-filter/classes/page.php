@@ -162,6 +162,9 @@ class MetaDataFilterPage extends MetaDataFilterCore
                 }
             }
         }
+        if(!isset($data['mdf'])){
+            $data['mdf']=array();
+        }
         //fixed 24-10-2014
         //$responce = 'meta_data_filter_bool=' . $data['meta_data_filter_bool'] . '&mdf_tax_bool=' . $data['mdf_tax_bool'] . '&' . self::$slug_cat . '=' . $data[self::$slug_cat];
         if (isset($data[self::$slug_cat]))
@@ -301,7 +304,9 @@ class MetaDataFilterPage extends MetaDataFilterCore
         } else
         {
             ob_start();
-            self::dynamic_sidebar($_REQUEST['widget_id'], $_REQUEST['sidebar_id']);
+            if(isset($_REQUEST['widget_id']) AND isset($_REQUEST['sidebar_id'])){
+                self::dynamic_sidebar($_REQUEST['widget_id'], $_REQUEST['sidebar_id']);
+            }
             $result['form'] = ob_get_clean();
         }
 

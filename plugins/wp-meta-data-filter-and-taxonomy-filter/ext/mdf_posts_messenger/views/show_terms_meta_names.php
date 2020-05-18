@@ -17,7 +17,10 @@ if(isset($taxonomy)){
                  if(is_array($val)){
                      $name=array();
                      foreach($val as $term_id){
-                         $name[]= get_term_by( 'id',$term_id , $key )->name;
+                         $term=get_term_by( 'id',$term_id , $key );                         
+                         if(is_object($term)){
+                                $name[]= $term->name;
+                         }
 //                         if(!empty($terms)){
 //                             $terms.=",";
 //                         }

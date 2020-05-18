@@ -1,7 +1,7 @@
 <?php if (!defined('ABSPATH')) die('No direct access allowed'); ?>
 
 <?php if (!empty($filter_post['items'])): ?>
-    <?php if ($filter_post['name']{0} !== '~'): 
+    <?php if (substr($filter_post['name'], 0,1)!== '~'): 
          $mdtf_title_sections="h4";
          $mdtf_title_sections=apply_filters('mdf_tag_title_sections',$mdtf_title_sections);
         ?>

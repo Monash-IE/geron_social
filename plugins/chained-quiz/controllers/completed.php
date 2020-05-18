@@ -198,7 +198,7 @@ class ChainedQuizCompleted {
 			$rows[] = $titlerow;	
 			foreach($records as $record) {
 				$row = $record->id . $delim . (empty($record->user_id) ? $record->ip : $record->user_nicename) 
-					. $delim . date_i18n($dateformat.' '.$timeformat, strtotime($record->datetime)) 
+					. $delim . $quote . date_i18n($dateformat.' '.$timeformat, strtotime($record->datetime)) . $quote 
 					. $delim . $record->points . $delim . $quote . stripslashes($record->result_title) . $quote;
 					
 				if(!empty($_GET['details'])) {
@@ -232,7 +232,7 @@ class ChainedQuizCompleted {
 		$filters_url="dn=".$dn."&dnf=".sanitize_text_field(@$_GET['dnf'])."&email=".$email."&emailf=".
 		sanitize_text_field(@$_GET['emailf'])."&ip=".$ip."&ipf=".sanitize_text_field(@$_GET['ipf'])."&date=".$date.
 		"&datef=".sanitize_text_field(@$_GET['datef'])."&points=".$points."&pointsf=".sanitize_text_field(@$_GET['pointsf']).
-		"&grade_id=".intval(@$_GET['grade_id'])."&source_url=".esc_url_raw(@$_GET['source_url']);		
+		"&result_id=".intval(@$_GET['result_id'])."&source_url=".esc_url_raw(@$_GET['source_url']);		
 		
 		$display_filters = (!count($filters)) ? false : true;	
 		

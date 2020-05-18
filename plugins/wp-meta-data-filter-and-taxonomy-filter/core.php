@@ -25,18 +25,30 @@ class MetaDataFilterCore
 
     public static function init()
     {
-        if (session_id() == '')
+        
+        //***
+        $where_keep_search_data = self::get_setting('keep_search_data_in');
+        if (!empty($where_keep_search_data))
+        {
+            self::$where_keep_search_data = $where_keep_search_data;
+        }
+        
+        if (!session_id() AND $where_keep_search_data=="session")
         {
             try
             {
-                @session_start();
+                @session_start([
+                    'read_and_close'  => true,
+                ]);
             } catch (Exception $e)
             {
                 //***
             }
         }
+        
         self::$session_id = session_id();
 //+++
+        
         $default_order_by = self::get_setting('default_order_by');
         $default_order = self::get_setting('default_order');
 //+++
@@ -48,12 +60,7 @@ class MetaDataFilterCore
         {
             self::$default_order_by = $default_order_by;
         }
-        //***
-        $where_keep_search_data = self::get_setting('keep_search_data_in');
-        if (!empty($where_keep_search_data))
-        {
-            self::$where_keep_search_data = $where_keep_search_data;
-        }
+
     }
 
     public static function get_application_path()
@@ -348,6 +355,9 @@ class MetaDataFilterCore
 
     public static function render_html($pagepath, $data = array())
     {
+        if (isset($data['pagepath'])) {
+            unset($data['pagepath']);
+        }        
         @extract($data);
         ob_start();
         include($pagepath);
@@ -502,99 +512,6 @@ class MetaDataFilterCore
     public static function escape($value)
     {
         return sanitize_text_field(esc_html($value));
-    }
-
-}
-
-//WP_QueryMDFCache UNDER DEV AND DOESN WORKS!!
-class WP_QueryMDFCache extends WP_Query
-{
-
-    public $key_string = "";
-    public $cache_table = "";
-    public $posts_ids = array();
-
-    public function __construct($query)
-    {
-        global $wpdb;
-        $query = (array) $query;
-        $key = md5(json_encode($query));
-        $this->key_string = 'mdf_pcache_' . $key;
-        $this->cache_table = $wpdb->prefix . 'postmeta';
-        //***
-        $value = $this->get_cache_value();
-        if (!empty($value) AND is_array($value))
-        {
-            $this->posts_ids = $value;
-            $query['post__in'] = $this->posts_ids;
-            //unset($query['posts_per_page']);
-            //unset($query['orderby']);
-            //unset($query['order']);
-            unset($query['meta_query']);
-            unset($query['tax_query']);
-            //unset($query['paged']);
-            //modified $query
-            parent::__construct($query);
-            $this->found_posts = 13;
-            //$this->post_count=13;
-            $this->max_num_pages = 2;
-        } else
-        {
-            parent::__construct($query);
-            $this->posts_ids = wp_list_pluck($this->posts, 'ID');
-            $this->set_cache_value();
-        }
-    }
-
-    private function set_cache_value()
-    {
-        global $wpdb;
-        $ids = implode(',', $this->posts_ids);
-        $data_sql=array(
-            array(
-                'val'=>0,
-                'type'=>'int',
-            ),
-             array(
-                'val'=>$this->key_string,
-                'type'=>'string',
-            ),
-                array(
-                'val'=>$ids,
-                'type'=>'string',
-            ), 
-       );  
-        $wpdb->query(MDTF_HELPER::mdf_prepare("INSERT INTO {$this->cache_table} (post_id, meta_key, meta_value) VALUES ( %d, %s, %s)",$data_sql));
-    }
-
-    private function get_cache_value()
-    {
-        global $wpdb;
-        $result = -1;
-        $data_sql=array(
-             array(
-                'val'=>$this->key_string,
-                'type'=>'string',
-            ),
-       );        
-        $sql = MDTF_HELPER::mdf_prepare("SELECT meta_key,meta_value FROM {$this->cache_table} WHERE meta_key=%s", $data_sql);
-        $value = $wpdb->get_results($sql);
-
-        if (!empty($value))
-        {
-            $value = end($value);
-            if (isset($value->meta_key))
-            {
-                $result = $value->meta_value;
-            }
-        }
-
-        if ($result != -1)
-        {
-            return explode(',', $result);
-        }
-
-        return -1;
     }
 
 }

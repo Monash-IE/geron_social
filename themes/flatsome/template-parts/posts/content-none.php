@@ -32,3 +32,6 @@
 		<?php endif; ?>
 	</div>
 </section>
+
+
+<?php echo do_shortcode("[block id=\"place-or-event-option\"]"); ?>

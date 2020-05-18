@@ -154,10 +154,6 @@ if (!isset($_REQUEST['meta_data_filter_works']) AND $wp_query->is_main_query())
         'paged' => $paged
     );
 
-    if (MetaDataFilterCore::get_setting('results_per_page'))
-    {
-        $args['posts_per_page'] = MetaDataFilterCore::get_setting('results_per_page');
-    }
 
     //WPML compatibility
     if (class_exists('SitePress'))

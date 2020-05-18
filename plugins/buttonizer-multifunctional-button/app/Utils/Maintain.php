@@ -67,9 +67,12 @@ class Maintain {
     {
         $settings = $this->getSettings();
 
-        if(!isset($settings['migration_version']) || $settings['migration_version'] !== '2.0')
+        if(!isset($settings['migration_version']))
         {
             (new Update())->run();
+        }
+        else if ($settings['migration_version'] === "2.0") {
+            (new Update())->update20to21();
         }
     }
 
@@ -83,21 +86,20 @@ class Maintain {
         if(current_user_can('editor') || current_user_can('administrator')) {
             $settings = $this->getSettings();
 
-            if(!isset($settings['admin_top_bar_show_button']) || $settings['admin_top_bar_show_button'] === 'true') {
+            if(!isset($settings['admin_top_bar_show_button']) || (isset($settings['admin_top_bar_show_button']) && filter_var($settings['admin_top_bar_show_button'], FILTER_VALIDATE_BOOLEAN, ['options' => ['default' => false]]) === true)) {
                 $admin_bar->add_menu(array(
                     'id' => 'buttonizer',
-                    'title' => '<img src="' . plugins_url('/assets/images/wp-icon.png', BUTTONIZER_PLUGIN_DIR) . '" style="vertical-align: text-bottom; opacity: 0.7; display: inline-block; margin-right: 5px;" /> Buttonizer 2.0',
-                    'href' => admin_url() . 'admin.php?page=Buttonizer' . (!is_admin() ? '#' . urlencode($_SERVER["REQUEST_URI"]) : ''),
-                    'meta' => array(// 'title' => __('Buttonizer'),
-                    ),
+                    'title' => '<img src="' . plugins_url('/assets/images/wp-icon.png', BUTTONIZER_PLUGIN_DIR) . '" style="vertical-align: text-bottom; opacity: 0.7; display: inline-block;" />',
+                    'href' => admin_url() . 'admin.php?page=Buttonizer', // (!is_admin() ? '#' . urlencode($_SERVER["REQUEST_URI"]) : '')
+                    'meta' => [],
                 ));
 
                 // Buttonizer buttons
                 $admin_bar->add_menu(array(
                     'id' => 'buttonizer_buttons',
                     'parent' => 'buttonizer',
-                    'title' => 'Buttons',
-                    'href' => admin_url() . 'admin.php?page=Buttonizer' . (!is_admin() ? '#' . urlencode($_SERVER["REQUEST_URI"]) : ''),
+                    'title' => __('Manage buttons', 'buttonizer-multifunctional-button'),
+                    'href' => admin_url() . 'admin.php?page=Buttonizer', // (!is_admin() ? '#' . urlencode($_SERVER["REQUEST_URI"]) : '')
                     'meta' => array(),
                 ));
 
@@ -105,11 +107,10 @@ class Maintain {
                 $admin_bar->add_menu(array(
                     'id' => 'buttonizer_settings',
                     'parent' => 'buttonizer',
-                    'title' => __('Settings'),
-                    'href' => admin_url() . 'admin.php?page=Buttonizer#open-settings',
+                    'title' => __('Settings', 'buttonizer-multifunctional-button'),
+                    'href' => admin_url() . 'admin.php?page=Buttonizer#/settings/preferences',
                     'meta' => array(),
                 ));
-
             }
         }
     }

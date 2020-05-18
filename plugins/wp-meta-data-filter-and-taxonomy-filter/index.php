@@ -4,15 +4,15 @@
   Plugin URI: https://wp-filter.com/
   Description: Powerful and Flexible Filter Tools. Let your clients find all things they are want with the ease on your site.
   Requires at least: WP 4.1.0
-  Tested up to: WP 5.3
+  Tested up to: WP 5.4
   Author: realmag777
   Author URI: https://pluginus.net/
-  Version: 1.2.6.1
+  Version: 1.2.7
   Tags: ajax filter, custom fields filter, ecommerce filter, filter, filter for posts, posts filter, wordpress filter, jigoshop filter, taxonomies filter, meta filter, products filter, search, woocommerce, taxonomies filter widget, woocommerce filter  Text Domain: meta-data-filter
   Domain Path: /languages
-  Forum URI: https://wordpress.org/support/plugin/wp-meta-data-filter-and-taxonomy-filter/
+  Forum URI: https://pluginus.net/support/forum/mdtf-wordpress-meta-data-taxonomies-filter/
   WC requires at least: 2.6.0
-  WC tested up to: 3.8
+  WC tested up to: 4.1
  */
 
 
@@ -39,7 +39,7 @@ require plugin_dir_path(__FILE__) . 'ext/mdf_posts_messenger/mdf_posts_messenger
 require plugin_dir_path(__FILE__) . 'ext/mdf_stat/index.php';
 
 //require plugin_dir_path(__FILE__) . 'ext/completeyourcar.php'; - just a sample extencion for developers
-//23-05-2019
+//12-05-2020
 class MetaDataFilter extends MetaDataFilterCore {
 
     const WIDGET_TAXONOMIES_ONLY = -1;
@@ -505,7 +505,8 @@ class MetaDataFilter extends MetaDataFilterCore {
 
         <?php
         $page_meta_data_filter = self::get_page_mdf_data();
-        if ($page_meta_data_filter['mdf_widget_options']['search_result_page'] != 'self'):
+
+        if (isset($page_meta_data_filter['mdf_widget_options']) AND $page_meta_data_filter['mdf_widget_options']['search_result_page'] != 'self'):
             ?>
             <?php if (isset($_REQUEST['meta_data_filter_found_posts']) AND $_REQUEST['meta_data_filter_found_posts'] != 0): ?>
                     var mdf_found_totally =<?php echo(isset($_REQUEST['meta_data_filter_found_posts']) ? intval($_REQUEST['meta_data_filter_found_posts']) : 0); ?>;
@@ -983,10 +984,12 @@ class MetaDataFilter extends MetaDataFilterCore {
                             $wpdb->query("DELETE FROM $wpdb->postmeta WHERE meta_key LIKE 'medafi_%' AND post_id=$post->ID");
                         }
 //***
-                        update_post_meta($post->ID, 'page_meta_data_filter', $_POST['page_meta_data_filter']); //synhro saving
-                        if (!empty($_POST['page_meta_data_filter']) AND is_array($_POST['page_meta_data_filter'])) {
-                            foreach ($_POST['page_meta_data_filter'] as $key => $value) {
-                                update_post_meta($post->ID, $key, $value); //this is for better searching
+                        if (isset($_POST['page_meta_data_filter'])) {
+                            update_post_meta($post->ID, 'page_meta_data_filter', $_POST['page_meta_data_filter']); //synhro saving
+                            if (!empty($_POST['page_meta_data_filter']) AND is_array($_POST['page_meta_data_filter'])) {
+                                foreach ($_POST['page_meta_data_filter'] as $key => $value) {
+                                    update_post_meta($post->ID, $key, $value); //this is for better searching
+                                }
                             }
                         }
                         update_post_meta($post->ID, self::$slug_cat, self::escape($_POST[self::$slug_cat]));
@@ -1351,7 +1354,7 @@ class MetaDataFilter extends MetaDataFilterCore {
             'taxonomies_options_show_count' => ($_REQUEST['is_auto_submit'] == 'true' OR empty($_REQUEST['page_mdf'])) ? 'false' : 'true',
             //if auto submit do not count items count in childs
             'taxonomies_options_post_recount_dyn' => 'true',
-            'taxonomies_options_hide_terms_0' => 'true',
+            'taxonomies_options_hide_terms_0' => 'false',
             'meta_data_filter_cat' => $_REQUEST['mdf_cat'],
             'meta_data_filter_slug' => $_REQUEST['slug'],
                 //'hide_meta_filter_values' => $_REQUEST['slug'],
@@ -1369,9 +1372,7 @@ class MetaDataFilter extends MetaDataFilterCore {
 //+++
         $hide_empty = false;
 //taxonomies_options_hide_terms_0
-        if (isset($widget_options['taxonomies_options_hide_terms_0'])) {
-            $hide_empty = (bool) ($widget_options['taxonomies_options_hide_terms_0']);
-        }
+     
 //print_r($widget_options);
         $terms = self::get_terms($tax_name, $hide_empty, false, 0, $mdf_parent_id);
         switch ($type) {
@@ -1468,11 +1469,7 @@ class MetaDataFilter extends MetaDataFilterCore {
                         $tax_count = self::get_tax_count($term, $tax_name, $widget_options, 'select');
                         $tax_count_strting = ' (' . $tax_count . ')';
                         if ($widget_options['taxonomies_options_post_recount_dyn'] == 'true' OR $widget_options['taxonomies_options_post_recount_dyn'] == 1) {
-                            if ($widget_options['taxonomies_options_hide_terms_0'] == 'true' OR $widget_options['taxonomies_options_hide_terms_0'] == 1) {
-                                if (!$tax_count) {
-                                    $show_option = false;
-                                }
-                            }
+                            
                         }
                     }
                     ?>
@@ -1575,11 +1572,7 @@ class MetaDataFilter extends MetaDataFilterCore {
                             $tax_count = self::get_tax_count($term, $tax_name, $widget_options, 'checkbox');
                             $tax_count_strting = ' <span class="mdf_term_count_string">(' . $tax_count . ')</span>';
                             if ($widget_options['taxonomies_options_post_recount_dyn'] == 'true' OR $widget_options['taxonomies_options_post_recount_dyn'] == 1) {
-                                if ($widget_options['taxonomies_options_hide_terms_0'] == 'true' OR $widget_options['taxonomies_options_hide_terms_0'] == 1) {
-                                    if (!$tax_count) {
-                                        $show_option = false;
-                                    }
-                                }
+                                
                             }
                         }
                         $childs_ids = array();
@@ -1644,11 +1637,7 @@ class MetaDataFilter extends MetaDataFilterCore {
                             $tax_count_strting = '<span class="mdf_label_count">' . $tax_count . '</span>';
 
                             if ($widget_options['taxonomies_options_post_recount_dyn'] == 'true' OR $widget_options['taxonomies_options_post_recount_dyn'] == 1) {
-                                if ($widget_options['taxonomies_options_hide_terms_0'] == 'true' OR $widget_options['taxonomies_options_hide_terms_0'] == 1) {
-                                    if (!$tax_count) {
-                                        $show_option = false;
-                                    }
-                                }
+                                
                             }
                         }
                         $childs_ids = array();
@@ -1767,11 +1756,7 @@ class MetaDataFilter extends MetaDataFilterCore {
                         $tax_count = self::get_tax_count($term, $tax_name, $widget_options, 'checkbox');
                         $tax_count_strting = ' <span class="mdf_term_count_string">(' . $tax_count . ')</span>';
                         if ($widget_options['taxonomies_options_post_recount_dyn'] == 'true' OR $widget_options['taxonomies_options_post_recount_dyn'] == 1) {
-                            if ($widget_options['taxonomies_options_hide_terms_0'] == 'true' OR $widget_options['taxonomies_options_hide_terms_0'] == 1) {
-                                if (!$tax_count) {
-                                    $show_option = false;
-                                }
-                            }
+                            
                         }
                     }
 
@@ -2182,12 +2167,12 @@ class MetaDataFilter extends MetaDataFilterCore {
             if ($section_toggle == 1) {
 //opened
                 ?>
-                <a href="#" class="mdf_front_toggle mdf_front_toggle_opened" data-condition="opened"><?php _e(MetaDataFilterCore::get_setting('toggle_close_sign') ? MetaDataFilterCore::get_setting('toggle_close_sign') : '-') ?></a>
+                <a href="#" class="mdf_front_toggle mdf_front_toggle_opened" data-condition="opened">-</a>
                 <?php
             } else {
 //closed
                 ?>
-                <a href="#" class="mdf_front_toggle mdf_front_toggle_closed" data-condition="closed"><?php _e(MetaDataFilterCore::get_setting('toggle_open_sign') ? MetaDataFilterCore::get_setting('toggle_open_sign') : '+') ?></a>
+                <a href="#" class="mdf_front_toggle mdf_front_toggle_closed" data-condition="closed">+</a>
                 <?php
             }
         }

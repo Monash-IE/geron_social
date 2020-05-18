@@ -2,10 +2,10 @@
 Contributors: Buttonizer, freemius
 Buy plugin: https://buttonizer.pro
 Tags: Conversion, action button, call, marketing, Social Sharing
-Requires at least: 4.2
-Tested up to: 5.3.2
-Stable tag: 2.0.9
-Requires PHP: 5.5
+Requires at least: 4.7
+Tested up to: 5.4
+Stable tag: 2.1.4
+Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,10 +154,92 @@ And the beauty of all: All actions are hidden in one button. The moment a visito
 In fact, Buttonizer is an addiction to use. Your website visitors will interact as never before.
 
 == Changelog ==
+= 2.1.4 =
+Release date: 14 May 2020
+
+**Bug fix:**
+- Fixed a dashboard crash when entering the Buttonizer dashboard in specific situations
+- Fixed several bugs in 'exit intent'
+
+If you experience bugs, problems or you just have some feedback, let us know on our [Buttonizer community](https://community.buttonizer.pro/)!
+
+= 2.1.3 =
+Release date: 11 May 2020
+
+Ciao! Buttonizer in Italiano! Buttonizer is now available in Italian, thanks to Ivano (a Buttonizer user)! Would you like to translate with us? [Become a contributor](https://poeditor.com/join/project/VW4vKq73HO)!
+
+**Bug fixes & updates:**
+- Added Italian language
+- Added new button action: "Go to bottom"
+- Renewed saving method
+- Fix icon search 'map' crash
+- Fix color picker crash when having "transparent" as color
+- Fix issue with subject & body not working
+- Fix issue with messenger widget
+- Fix exit intent for single buttons
+- Fixed several crashes
+
+If you experience bugs, problems or you just have some feedback, let us know on our [Buttonizer community](https://community.buttonizer.pro/)!
+
+= 2.1.2 =
+Release date: 30 April 2020
+
+**Bug fixes & updates:**
+- Fix single button saving loop
+- Fix exit intent crash
+- Fix bug in time schedules
+- Possible fix some crashes on new installs
+- Possible fix ajaxurl error some users experienced
+- Possible fix current_screen() crash
+- Improved translation management in UI
+- Improved no-ajax feature
+- Improved performance
+
+If you experience bugs, problems or you just have some feedback, let us know on our [Buttonizer community](https://community.buttonizer.pro/)!
+
+= 2.1.1 =
+Release date: 28 April 2020
+
+First bug fixes! Thank you all for your feedback :)
+
+**Bug fixes:**
+- Fixes multiple UI crashes
+- Fixes a bug in page rule which was introduced in v2.1
+- Fixed a bug that prevented the Buttonizer button to show in WordPress admin bar
+- Fixes a bug in the icon library
+- Fixes a bug in tooltips
+- Worked on feedback
+
+If you experience bugs, problems or you just have some feedback, let us know on our [Buttonizer community](https://community.buttonizer.pro/)!
+
+= 2.1.0 =
+Release date: 25 April 2020
+
+Release of the 2.1 version! After working hard the past few months and releasing multiple betas, we are statisfied to finally release it!
+
+Buttonizer 2.0 was the start of something new for Buttonizer. We went from a back-end to a frond-end interface. After releasing the 2.0 version last year we have received a lot of feedback from our community. The focus for Buttonizer 2.1 was all on UX and integrating Material Design rules into the interface.
+
+We are very pleased to finally release this version and hope that you get a smile when interacting with Buttonizer 2.1.
+
+**What's new?**
+- Big change in UI and UX
+- Improved performance
+- Fully rewritten dashboard
+
+**Updated:**
+- Optimized Saving
+- More advanced features
+- Restructured Frond-End
+- Now using Wordpress API
+- Dropped support for PHP 5.9 or lower
+- Dropped support for WordPress 4.6 or lower
+
+If you experience bugs, problems or you have some feedback, let us know on our [Buttonizer community](https://community.buttonizer.pro/)!
+
 = 2.0.9 =
 Release date: 3 February 2020
 
-In this release we've updated the backend of Freemius.
+In this release we've updated the backend of Freemius. We now support a better.
 
 **Version 2.1 in the make!***
 At the moment the Buttonizer team is working on a big update that will be out soon! In the v2.1 we'll give Buttonizer a new modern dashboard, rewritten backend and new features. Stay tuned if you're curious!

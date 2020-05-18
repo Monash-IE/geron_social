@@ -8,6 +8,7 @@ class Group
 {
     private  $buttons = array() ;
     private  $data ;
+    private  $totalButtons = 0 ;
     private  $countMobile = 0 ;
     private  $countDesktop = 0 ;
     /**
@@ -21,8 +22,9 @@ class Group
     
     /**
      * Return option data
+     * 
      * @param $key
-     * @param string $default
+     * @param $default null
      * @return string
      */
     private function getOption( $key, $default = '' )
@@ -31,24 +33,36 @@ class Group
     }
     
     /**
-     * Return option data as boolean
+     * Return option data as number
+     * 
      * @param $key
+     * @param $default null
      * @return string
      */
-    private function getBoolean( $key )
+    private function getNumber( $key, $default = 0 )
     {
-        return ( isset( $this->data[$key] ) && $this->data[$key] == 'true' ? true : false );
+        return ( isset( $this->data[$key] ) && is_numeric( $this->data[$key] ) && $this->data[$key] >= 0 ? $this->data[$key] : $default );
     }
     
     /**
-     * Return bool value
-     *
+     * Return option data as boolean
+     * 
      * @param $key
-     * @return string
+     * @param $default false
+     * @return boolean
      */
-    private function getBoolValue( $key )
+    public function getBoolean( $key, $default = false )
     {
-        return ( isset( $this->data[$key] ) ? $this->data[$key] == 'true' : true );
+        return ( isset( $this->data[$key] ) ? filter_var( $this->data[$key], FILTER_VALIDATE_BOOLEAN, [
+            'options' => [
+            'default' => false,
+        ],
+        ] ) === true : $default );
+    }
+    
+    public function getId()
+    {
+        return $this->getOption( "id", null );
     }
     
     /**
@@ -58,17 +72,18 @@ class Group
      */
     public function add( Button $button )
     {
+        $this->totalButtons++;
         // Show button (on page OR only when opened
         
         if ( $button->showButton() ) {
-            if ( ($button->getBooleanDeskMob( 'show_desktop' ) || $button->getBooleanDeskMob( 'show_mobile' )) && ($this->countDesktop >= 7 || $this->countMobile >= 7) ) {
+            if ( ($button->getBoolean( 'show_desktop' ) || $button->getBoolean( 'show_mobile' )) && ($this->countDesktop >= 7 || $this->countMobile >= 7) ) {
                 // Is desktop, but no place on desktop? Force hide on desktop
                 
-                if ( $button->getBooleanDeskMob( 'show_desktop' ) && $this->countDesktop >= 7 && $this->countMobile < 7 && $button->getBooleanDeskMob( 'show_mobile' ) ) {
+                if ( $button->getBoolean( 'show_desktop' ) && $this->countDesktop >= 7 && $this->countMobile < 7 && $button->getBoolean( 'show_mobile' ) ) {
                     $button->setOption( "show_desktop", false );
                 } else {
                     
-                    if ( $button->getBooleanDeskMob( 'show_mobile' ) && $this->countMobile >= 7 && $this->countDesktop < 7 && $button->getBooleanDeskMob( 'show_desktop' ) ) {
+                    if ( $button->getBoolean( 'show_mobile' ) && $this->countMobile >= 7 && $this->countDesktop < 7 && $button->getBoolean( 'show_desktop' ) ) {
                         $button->setOption( "show_mobile", false );
                     } else {
                         return;
@@ -78,11 +93,11 @@ class Group
             
             }
             // Add mobile
-            if ( $button->getBooleanDeskMob( 'show_mobile' ) ) {
+            if ( $button->getBoolean( 'show_mobile' ) ) {
                 $this->countMobile++;
             }
             // Add desktop
-            if ( $button->getBooleanDeskMob( 'show_desktop' ) ) {
+            if ( $button->getBoolean( 'show_desktop' ) ) {
                 $this->countDesktop++;
             }
             $this->buttons[] = $button->generate();
@@ -97,10 +112,21 @@ class Group
      */
     public function show()
     {
+        // Only one button? Ignore the group show/schedule/pagerule settings, just show the button.
+        // Otherwise you'll get confused why a button doesn't show if it isn't a group
+        if ( $this->totalButtons === 1 && !($this->countDesktop === 0 && $this->countMobile === 0) ) {
+            return true;
+        }
         // Hide on all devices
         
         if ( !$this->getBoolean( 'show_desktop' ) && !$this->getBoolean( 'show_mobile' ) && !$this->getBoolean( 'single_button_mode' ) ) {
-            Buttonizer::addEvent( "The group <b>" . $this->getOption( 'name', 'unnamed' ) . "</b> is hidden on all devices" );
+            Buttonizer::addEvent( [
+                "id"          => $this->getOption( 'id', null ),
+                "name"        => $this->getOption( 'name', "Unnamed" ),
+                "button_type" => "group",
+                "message"     => __( 'The group is hidden on all devices', 'buttonizer-multifunctional-button' ),
+                "type"        => "all_devices_hidden",
+            ] );
             return;
         }
         
@@ -113,53 +139,53 @@ class Group
     public function fix()
     {
         $data = [
-            'name'            => ( isset( $this->data['name'] ) ? $this->data['name'] : "Undefined" ),
+            'name'            => $this->getOption( 'name', "Unnamed group" ),
             'position'        => [
             'top'    => 0,
             'left'   => 0,
-            'bottom' => ( isset( $this->data['vertical'] ) ? $this->data['vertical'] : 0 ),
-            'right'  => ( isset( $this->data['horizontal'] ) ? $this->data['horizontal'] : 0 ),
+            'bottom' => $this->getNumber( 'vertical', BUTTONIZER_DEF_POSITION_VERTICAL ),
+            'right'  => $this->getNumber( 'horizontal', BUTTONIZER_DEF_POSITION_HORIZONTAL ),
         ],
             'styling'         => [
             'menu'   => [
-            'style'     => ( isset( $this->data['menu_style'] ) ? $this->data['menu_style'] : 'default' ),
-            'animation' => ( isset( $this->data['menu_animation'] ) ? $this->data['menu_animation'] : 'none' ),
+            'style'     => $this->getOption( 'menu_style', BUTTONIZER_DEF_MENU_STYLE ),
+            'animation' => $this->getOption( 'menu_animation', BUTTONIZER_DEF_MENU_ANIMATION ),
         ],
             'button' => [
-            'color'       => ( isset( $this->data['background_color'] ) ? $this->data['background_color'] : '' ),
-            'interaction' => ( isset( $this->data['background_color_interaction'] ) ? $this->data['background_color_interaction'] : '' ),
-            'radius'      => (( isset( $this->data['border_radius'] ) ? $this->data['border_radius'] : 50 )) . "%",
+            'color'       => $this->getOption( 'background_color', BUTTONIZER_DEF_BACKGROUND_COLOR ),
+            'interaction' => $this->getOption( 'background_color_interaction', BUTTONIZER_DEF_BACKGROUND_COLOR_INTERACTION ),
+            'radius'      => $this->getNumber( 'border_radius', BUTTONIZER_DEF_BORDER_RADIUS ) . "%",
         ],
             'border' => [
-            'width'       => ( isset( $this->data['border_size'] ) ? $this->data['border_size'] : 0 ),
-            'color'       => ( isset( $this->data['border_color'] ) ? $this->data['border_color'] : '' ),
-            'interaction' => ( isset( $this->data['border_color_interaction'] ) ? $this->data['border_color_interaction'] : '' ),
+            'width'       => $this->getNumber( 'border_size', 0 ),
+            'color'       => $this->getOption( 'border_color', '' ),
+            'interaction' => $this->getOption( 'border_color_interaction', '' ),
         ],
             'icon'   => [
-            'color'       => ( isset( $this->data['icon_color'] ) ? $this->data['icon_color'] : '' ),
-            'interaction' => ( isset( $this->data['icon_color_interaction'] ) ? $this->data['icon_color_interaction'] : '' ),
-            'size'        => (( isset( $this->data['icon_size'] ) && is_numeric( $this->data['icon_size'] ) && $this->data['icon_size'] >= 0 ? $this->data['icon_size'] : 28 )) . "px",
+            'color'       => $this->getOption( 'icon_color', '' ),
+            'interaction' => $this->getOption( 'icon_color_interaction', '' ),
+            'size'        => $this->getNumber( 'icon_size', BUTTONIZER_DEF_GROUP_ICON_SIZE ) . "px",
         ],
             'label'  => [
-            'text'       => ( isset( $this->data['label_color'] ) ? $this->data['label_color'] : '' ),
-            'background' => ( isset( $this->data['label_background_color'] ) ? $this->data['label_background_color'] : '' ),
-            'size'       => (( isset( $this->data['label_font_size'] ) ? $this->data['label_font_size'] : 12 )) . "px",
-            'radius'     => (( isset( $this->data['label_border_radius'] ) ? $this->data['label_border_radius'] : 3 )) . "px",
+            'text'       => $this->getOption( 'label_color', '' ),
+            'background' => $this->getOption( 'label_background_color', '' ),
+            'size'       => $this->getNumber( 'label_font_size', BUTTONIZER_DEF_LABEL_FONT_SIZE ) . "px",
+            'radius'     => $this->getNumber( 'label_border_radius', BUTTONIZER_DEF_LABEL_BORDER_RADIUS ) . "px",
         ],
         ],
             'icon'            => [
-            'groupIcon' => ( isset( $this->data['icon'] ) ? $this->data['icon'] : 'fa fa-plus' ),
+            'groupIcon' => $this->getOption( 'icon', BUTTONIZER_DEF_GROUP_ICON ),
         ],
             'label'           => [
-            'groupLabel'         => ( isset( $this->data['label'] ) ? $this->data['label'] : '' ),
-            'show_label_desktop' => ( isset( $this->data['show_label_desktop'] ) ? $this->data['show_label_desktop'] : 'always' ),
-            'show_label_mobile'  => ( isset( $this->data['show_label_mobile'] ) ? $this->data['show_label_mobile'] : 'always' ),
+            'groupLabel'         => $this->getOption( 'label', '' ),
+            'show_label_desktop' => $this->getOption( 'show_label_desktop', BUTTONIZER_DEF_LABEL_VISIBILITY ),
+            'show_label_mobile'  => $this->getOption( 'show_label_mobile', BUTTONIZER_DEF_LABEL_VISIBILITY ),
         ],
             'device'          => [
-            'show_mobile'  => ( isset( $this->data['show_mobile'] ) ? $this->data['show_mobile'] : 'true' ),
-            'show_desktop' => ( isset( $this->data['show_desktop'] ) ? $this->data['show_desktop'] : 'true' ),
+            'show_mobile'  => $this->getBoolean( 'show_mobile', BUTTONIZER_DEF_MOBILE_VISIBILITY ),
+            'show_desktop' => $this->getBoolean( 'show_desktop', BUTTONIZER_DEF_DESKTOP_VISIBILITY ),
         ],
-            'openedByDefault' => ( isset( $this->data['start_opened'] ) ? $this->data['start_opened'] : 'false' ),
+            'openedByDefault' => $this->getBoolean( 'start_opened', BUTTONIZER_DEF_START_OPENED ),
             'buttons'         => $this->buttons,
         ];
         return $data;

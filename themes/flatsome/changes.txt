@@ -1,8 +1,36 @@
+--- 3.11.3 ---
+FIXED: Custom portfolio archive page title and template selection.
+FIXED: Lightbox (auto open) placement when off canvas sidebar is open.
+
+--- 3.11.2 ---
+FIXED: Terms in permalink separated by comma in some cases.
+
+--- 3.11.1 ---
+Security release!
+This release contains a fix to harden security, we encourage you to update your sites as soon as possible.
+
+NEW: WooCommerce 4.1 compatibility.
+
+FIXED: Improved security in UX Builder.
+FIXED: Custom portfolio slug in site map.
+FIXED: Wishlist button on infinite scroll items.
+FIXED: Review pagination when having extra tabs.
+FIXED: Account icon live refresh in mobile preview.
+FIXED: Equalize items for cross-sells after cart update.
+FIXED: Slider: banner background video playback if placed in row.
+FIXED: Various CSS improvements.
+
+TWEAK: Improved rating stars alignment.
+TWEAK: Product thumbnail reset when hidden by variation selection.
+
+UPDATED: Spanish translation (Posted on).
+
 --- 3.11.0 ---
 NEW: WooCommerce 4.0 compatibility.
+NEW: Added tons of new Google Fonts.
 NEW: My Account title color, align, background options.
 NEW: Option to disable blog date badges globally.
-NEW: Options to change regular and sale price.
+NEW: Options to change regular and sale price color.
 NEW: Blog post layout type option row/masonry.
 NEW: Text align to top for different elements.
 NEW: Column background radius options.
@@ -14,7 +42,7 @@ NEW: Featured posts image size option.
 NEW: Image lightbox caption option.
 NEW: Logo element image size option.
 NEW: Button element padding option.
-NEW: Payment icons element.
+NEW: Payment icons element for UX Builder.
 NEW: 10+ new payment icons.
 
 FIXED: Catalog filter button did not show on mobile category pages with custom shop content.
@@ -30,7 +58,6 @@ FIXED: Various RTL improvements.
 
 TWEAK: Improved scrollbars in customizer in FF.
 TWEAK: Product variation results in search now depend on parent visibility.
-TWEAK: Updated Google fonts list.
 
 DEV: Updated customizer option framework.
 DEV: Updated Walkers.

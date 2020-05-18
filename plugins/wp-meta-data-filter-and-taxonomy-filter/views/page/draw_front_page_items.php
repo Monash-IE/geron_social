@@ -16,7 +16,7 @@ if (!empty($filter_block['items'])):
     $section_sel_emulator = (int) get_post_meta($filter_post_id, 'widget_section_sel_emulator', true);
     ?>
     <input type="hidden" class="mdf_filter_post_blocks_toggles" name="mdf[filter_post_blocks_toggles][]" value="<?php echo $section_toggle ?>" />
-    <?php if (isset($filter_block['name']{0}) AND $filter_block['name']{0} !== '~'): ?>
+    <?php if (substr($filter_block['name'], 0,1) !== '~'): ?>
         <<?php echo $mdtf_title_sections ?> class="data-filter-section-title">
         <?php _e($filter_block['name']) ?><?php MetaDataFilter::draw_front_toggle($section_toggle); ?>
         </<?php echo $mdtf_title_sections ?>>
@@ -75,7 +75,7 @@ if (!empty($filter_block['items'])):
                         <?php if (!empty($widget_options['taxonomies']) AND is_array($widget_options['taxonomies'])): ?>
                                 <td>
                             <?php foreach ($widget_options['taxonomies'] as $tax_name => $v) : ?>
-                                        <div class="mdf_input_container <?php if ($widget_options['act_without_button']): ?>mdf_tax_auto_submit<?php endif; ?> <?php if ($widget_options['ajax_items_recount']): ?>mdf_tax_ajax_autorecount<?php endif; ?> mdf_section_tax mdf_section_tax_<?php echo $tax_name ?>">
+                                        <div class="mdf_input_container <?php if ($widget_options['ajax_items_recount']): ?>mdf_tax_ajax_autorecount<?php endif; ?> mdf_section_tax mdf_section_tax_<?php echo $tax_name ?>">
                                 <?php $show_how = $widget_options['taxonomies_options_show_how'][$tax_name]; ?>
 
                                     <?php
@@ -90,7 +90,7 @@ if (!empty($filter_block['items'])):
                                       $tax_title = __(MetaDataFilterHtml::get_term_label_by_name($tax_name));
                                       }
 
-                                      if (@$tax_title{0} !== '~' AND $show_how == 'select')
+                                      if (substr($tax_title, 0,1) !== '~' AND $show_how == 'select')
                                       {
                                       ?>
                                       <h4 class="data-filter-section-title"><?php echo $tax_title; ?>:</h4>
@@ -312,7 +312,7 @@ if (!empty($filter_block['items'])):
                                                 }
                                                 echo $tax_title;
                                                 ?></h4> -->
-                                                <div class="mdf_input_container mdf_tax_filter_section_<?php echo $tax_name ?> <?php if ($widget_options['act_without_button']): ?>mdf_tax_auto_submit<?php endif; ?>">
+                                                <div class="mdf_input_container mdf_tax_filter_section_<?php echo $tax_name ?>">
                             <?php
                             $parent_id = 0;
                             $terms_ids = array();
@@ -391,12 +391,7 @@ if (!empty($filter_block['items'])):
                                         $items_count = 'xxx';
                                         if ($widget_options['show_slider_items_count'] AND ! $this_item_is_hidden) {
                                             $items_count = MetaDataFilterHtml::get_item_posts_count($page_meta_data_filter, $search_key, array($min, $max), $slug, 'slider');
-                                            if (!$items_count) {
-                                                if ($widget_options['hide_items_where_count_0']) {
-                                                    //continue; //IF NO ONE ITEM WHY NOT TO HIDE THIS?!
-                                                    $this_item_is_hidden = true;
-                                                }
-                                            }
+                                            
                                         }
 
                                         //++++++++++++++++++++++++++++++++++++
@@ -506,11 +501,7 @@ if (!empty($filter_block['items'])):
 
                             if ($widget_options['show_slider_items_count']) {
                                 $items_count = MetaDataFilterHtml::get_item_posts_count($page_meta_data_filter, $search_key, array($min, $max), $slug, 'slider');
-                                if (!$items_count) {
-                                    if ($widget_options['hide_items_where_count_0']) {
-                                        //continue; //IF NO ONE ITEM WHY NOT TO HIDE THIS?!
-                                    }
-                                }
+                               
                             }
 
                             //+++
@@ -574,11 +565,7 @@ if (!empty($filter_block['items'])):
                             $items_count = -1;
                             if ($widget_options['show_checkbox_items_count']) {
                                 $items_count = MetaDataFilterHtml::get_item_posts_count($page_meta_data_filter, $search_key, 1, $slug, 'checkbox');
-                                if (!$items_count) {
-                                    if ($widget_options['hide_items_where_count_0']) {
-                                        continue; //IF NO ONE ITEM WHY NOT TO HIDE THIS?!
-                                    }
-                                }
+                               
                             }
                             //+++
                             $is_checked = isset($page_meta_data_filter[$key]) ? (int) $page_meta_data_filter[$key] : '~';
@@ -603,11 +590,7 @@ if (!empty($filter_block['items'])):
                                 $count_string = "";
                                 if ($widget_options['show_checkbox_items_count']) {
                                     $items_count = MetaDataFilterHtml::get_item_posts_count($page_meta_data_filter, $search_key, 1, $slug, 'checkbox');
-                                    if (!$items_count) {
-                                        if ($widget_options['hide_items_where_count_0']) {
-                                            continue; //IF NO ONE ITEM WHY NOT TO HIDE THIS?!
-                                        }
-                                    }
+                                   
                                     $count_string = '<span class="mdf_label_count">' . $items_count . '</span>';
                                 }
                                 //+++
@@ -640,7 +623,7 @@ if (!empty($filter_block['items'])):
                 ?>
                             <td>
                                 <div class="mdf_input_container">
-                            <?php if ($item['name']{0} !== '~'): ?>
+                            <?php if (substr($item['name'], 0,1)!== '~'): ?>
                                         <<?php echo $mdtf_title_sections ?> class="data-filter-section-title"><?php _e($item['name']) ?>:
                                 <?php if (!empty($item['description'])): ?>
                                             <label for="<?php echo $key ?>_<?php echo $uid ?>">
@@ -675,7 +658,7 @@ if (!empty($filter_block['items'])):
                 ?>
                             <td>
                                 <div class="mdf_input_container">
-                            <?php if (empty($item['name']) OR $item['name']{0} !== '~'): ?>
+                            <?php if (empty($item['name']) OR substr($item['name'], 0,1)!== '~'): ?>
                                         <<?php echo $mdtf_title_sections ?> class="data-filter-section-title"><?php _e($item['name']) ?>:
                                 <?php if (!empty($item['description'])): ?>
                                             <span class="mdf_tooltip" title="<?php echo str_replace('"', "'", __($item['description'])); ?>">
@@ -705,7 +688,7 @@ if (!empty($filter_block['items'])):
                                             ?>
                                 <td>
                                     <div class="mdf_input_container">
-                                <?php if ($item['name']{0} !== '~'): ?>
+                                <?php if (substr($item['name'], 0,1)!== '~'): ?>
                                             <<?php echo $mdtf_title_sections ?> class="data-filter-section-title" style="margin-bottom: 4px;"><?php _e($item['name']) ?>:&nbsp;<?php if (!empty($item['description'])): ?>
                                                 <span class="mdf_tooltip" title="<?php echo str_replace('"', "'", __($item['description'])); ?>">
                                                     <img src="<?php echo $icon ?>" alt="help" />
@@ -729,17 +712,17 @@ if (!empty($filter_block['items'])):
                         $select_option_key = $item['select_key'][$kk];
 
                         //***
-                        $tmp = explode('-', $select_option_key);
-                        $is_range = MDTF_HELPER::is_slider_range_value($tmp); //range drop down for price
+                        $is_range=false;
+                        if($item['select_range_value']==1){
+                            $tmp = explode('-', $select_option_key);
+                            $is_range = MDTF_HELPER::is_slider_range_value($tmp); //range drop down for price                            
+                        }
+
                         //***
 
                         if ($widget_options['show_select_items_count']) {
                             $items_count = MetaDataFilterHtml::get_item_posts_count($page_meta_data_filter, $search_key, $select_option_key, $slug, 'select');
-                            if (!$items_count) {
-                                if ($widget_options['hide_items_where_count_0'] AND ! $is_range) {
-                                    continue; //IF NO ONE ITEM WHY NOT TO HIDE THIS?!
-                                }
-                            }
+                           
                         }
                         ?>
 
@@ -798,11 +781,7 @@ if (!empty($filter_block['items'])):
                                     $items_count = -1;
                                     if ($widget_options['show_checkbox_items_count']) {
                                         $items_count = MetaDataFilterHtml::get_item_posts_count($page_meta_data_filter, $search_key, 1, $slug, 'checkbox');
-                                        if (!$items_count) {
-                                            if ($widget_options['hide_items_where_count_0']) {
-                                                continue; //IF NO ONE ITEM WHY NOT TO HIDE THIS?!
-                                            }
-                                        }
+                                        
                                     }
                                     //+++
                                     $is_checked = isset($page_meta_data_filter[$key]) ? (int) $page_meta_data_filter[$key] : '~';
@@ -847,7 +826,7 @@ if (!empty($filter_block['items'])):
             <table class="mdf_update_button_table_<?php echo $filter_post_id ?>">
                 <tr>
                     <td>
-                        <input type="submit" class="mdf_button" name="" value="<?php _e($widget_options['title_for_filter_button']) ?>" /><br />
+                        <input type="submit" class="mdf_button" name="" value="<?php _e('Filter', 'meta-data-filter') ?>" /><br />
                         <br />
                     </td>
                 </tr>

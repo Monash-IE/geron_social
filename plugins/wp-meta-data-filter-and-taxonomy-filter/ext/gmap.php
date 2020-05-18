@@ -25,7 +25,7 @@ class MDF_GMAP extends MetaDataFilterCore
             $gmap_pages = explode(',', $gmap_pages);
             if ($gmap_pages[0] == -1)
             {
-                wp_enqueue_script('maps.google.com', 'http://maps.google.com/maps/api/js?v=3.14&sensor=false'.$gm_key_str, array('jquery'));
+                wp_enqueue_script('maps.google.com', 'https://maps.google.com/maps/api/js?v=3.14&sensor=false'.$gm_key_str, array('jquery'));
             }
             if (is_page() OR is_single())
             {
@@ -34,7 +34,7 @@ class MDF_GMAP extends MetaDataFilterCore
                 {
                     if (in_array($post->ID, $gmap_pages))
                     {
-                        wp_enqueue_script('maps.google.com', 'http://maps.google.com/maps/api/js?v=3.14&sensor=false'.$gm_key_str, array('jquery'));
+                        wp_enqueue_script('maps.google.com', 'https://maps.google.com/maps/api/js?v=3.14&sensor=false'.$gm_key_str, array('jquery'));
                     }
                 }
             }
@@ -52,7 +52,7 @@ class MDF_GMAP extends MetaDataFilterCore
         extract(shortcode_atts(array(
             'page' => 1,
             'post_type' => 'post',
-            'per_page' => MetaDataFilter::get_setting('results_per_page'),
+            'per_page' => 0,
             'meta_data_filter_cat' => 0,
             'taxonomies' => ''
                         ), $atts));

@@ -2,7 +2,7 @@
 Tags: related posts, related, related articles, contextual related posts, similar posts, related posts widget
 Contributors: webberzone, Ajay
 Donate link: https://ajaydsouza.com/donate/
-Stable tag: 2.9.0
+Stable tag: 2.9.2
 Requires at least: 4.9
 Tested up to: 5.4
 License: GPLv2 or later
@@ -171,6 +171,21 @@ You can insert the related posts anywhere in your post using the `[crp]` shortco
 
 == Changelog ==
 
+= 2.9.2 =
+
+Release post: [https://webberzone.com/blog/contextual-related-posts-v2-9-0/](https://webberzone.com/blog/contextual-related-posts-v2-9-0/)
+
+Bug fixes:
+    * Password protected posts will no longer show the excerpt
+
+= 2.9.1 =
+
+Release post: [https://webberzone.com/blog/contextual-related-posts-v2-9-0/](https://webberzone.com/blog/contextual-related-posts-v2-9-0/)
+
+Bug fixes:
+    * Custom CSS box would not save and get cleared out when saving settings
+	* `include_cat_ids` didn't work with the shortcode
+
 = 2.9.0 =
 
 Release post: [https://webberzone.com/blog/contextual-related-posts-v2-9-0/](https://webberzone.com/blog/contextual-related-posts-v2-9-0/)
@@ -220,5 +235,5 @@ For the changelog of earlier versions, please refer to the separate changelog.tx
 
 == Upgrade Notice ==
 
-= 2.9.0 =
-New features and bug-fixes. Check the Changelog for more details or view the release post on https://webberzone.com
+= 2.9.2 =
+Bug fix release. Check the Changelog for more details or view the release post on https://webberzone.com

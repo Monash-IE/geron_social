@@ -9,10 +9,6 @@ if (!defined('ABSPATH'))
         <tr valign="top">
             <th scope="row"><label><?php _e('Notice:', 'meta-data-filter') ?></label></th>
             <td>
-                <p class="description">
-                    <?php printf(__('This extension is an experimental but with finished arhitecture of collection and keeping the data! If you have an idea about how to improve representation of the statistic data on your site, I mean how do you want to see processed data on the graphs, types of graphs, etc. - create topic <a href="%s" target="_blank">here</a> to discuss it! Be sure that your PHP version is not lower than 5.4.', 'meta-data-filter'), (MetaDataFilter::$is_free ? 'https://wordpress.org/support/plugin/wp-meta-data-filter-and-taxonomy-filter' : 'https://codecanyon.net/item/wordpress-meta-data-taxonomies-filter/7002700/support')) ?>
-                </p>
-              
                 <a href="https://wp-filter.com/extension/statistic/" class="button" target="_blank"><?php echo __('Read How to use here', 'meta-data-filter') ?></a>
             </td>
         </tr>

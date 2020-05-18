@@ -120,7 +120,7 @@ if (!empty($filter_posts)) {
                         <?php
                         //print_r($res[$key]);
                         if ($res[$key]['slider_prettify'] == 1) {
-                            $value = number_format($value, 2);
+                            $value = number_format($value, 0,',','');
                         }
                         if (!isset($res[$key]['slider_range_value'])) {
                             $res[$key]['slider_range_value'] = 0;

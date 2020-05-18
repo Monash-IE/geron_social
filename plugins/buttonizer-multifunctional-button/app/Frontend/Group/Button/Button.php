@@ -21,32 +21,42 @@ class Button
     
     /**
      * Return option data
+     * 
      * @param $key
+     * @param $default null
      * @return string
      */
-    private function getOption( $key )
+    private function getOption( $key, $default = '' )
     {
-        return ( isset( $this->data[$key] ) ? $this->data[$key] : '' );
+        return ( isset( $this->data[$key] ) ? $this->data[$key] : $default );
+    }
+    
+    /**
+     * Return option data as number
+     * 
+     * @param $key
+     * @param $default null
+     * @return string
+     */
+    private function getNumber( $key, $default = 0 )
+    {
+        return ( isset( $this->data[$key] ) && is_numeric( $this->data[$key] ) && $this->data[$key] >= 0 ? $this->data[$key] : $default );
     }
     
     /**
      * Return option data as boolean
+     * 
      * @param $key
-     * @return string
+     * @param $default false
+     * @return boolean
      */
-    private function getBoolean( $key )
+    public function getBoolean( $key, $default = false )
     {
-        return ( isset( $this->data[$key] ) && $this->data[$key] == 'true' ? true : false );
-    }
-    
-    /**
-     * New Return option data as boolean, so other options don't get affected
-     * @param $key
-     * @return string
-     */
-    public function getBooleanDeskMob( $key )
-    {
-        return ( isset( $this->data[$key] ) && $this->data[$key] == 'true' ? true : false );
+        return ( isset( $this->data[$key] ) ? filter_var( $this->data[$key], FILTER_VALIDATE_BOOLEAN, [
+            'options' => [
+            'default' => false,
+        ],
+        ] ) === true : $default );
     }
     
     /**
@@ -61,17 +71,6 @@ class Button
     }
     
     /**
-     * Return bool value
-     *
-     * @param $key
-     * @return string
-     */
-    private function getBoolValue( $key )
-    {
-        return ( isset( $this->data[$key] ) ? $this->data[$key] == 'true' : true );
-    }
-    
-    /**
      * Show buttons, based on their settings
      * @return bool
      */
@@ -79,8 +78,15 @@ class Button
     {
         // Button not in use
         
-        if ( !$this->getBooleanDeskMob( "show_desktop" ) && !$this->getBooleanDeskMob( "show_mobile" ) ) {
-            Buttonizer::addEvent( "The button <b>" . $this->getOption( 'name', 'unnamed' ) . "</b> is hidden on all devices" );
+        if ( !$this->getBoolean( "show_desktop" ) && !$this->getBoolean( "show_mobile" ) ) {
+            Buttonizer::addEvent( [
+                "id"          => $this->getOption( 'id', null ),
+                "group_id"    => $this->groupObject->getId(),
+                "name"        => $this->getOption( 'name', "Unnamed" ),
+                "button_type" => "button",
+                "message"     => __( 'The button is hidden on all devices', 'buttonizer-multifunctional-button' ),
+                "type"        => "all_devices_hidden",
+            ] );
             return false;
         }
         
@@ -93,49 +99,60 @@ class Button
     public function generate()
     {
         $data = [
-            'name'   => ( isset( $this->data['name'] ) ? $this->data['name'] : 'Unnamed button' ),
-            'action' => [
-            'type'           => ( isset( $this->data['type'] ) ? $this->data['type'] : 'url' ),
-            'action'         => ( isset( $this->data['action'] ) ? $this->data['action'] : '/' ),
-            'action_new_tab' => ( isset( $this->data['action_new_tab'] ) ? $this->data['action_new_tab'] : "false" ),
+            'name'    => $this->getOption( 'name', 'Unnamed button' ),
+            'action'  => [
+            'type'           => $this->getOption( 'type', BUTTONIZER_DEF_BUTTON_ACTION ),
+            'action'         => $this->getOption( 'action', '/' ),
+            'action_new_tab' => $this->getBoolean( 'action_new_tab', BUTTONIZER_DEF_BUTTON_ACTION_NEW_TAB ),
         ],
-            'icon'   => [
-            'buttonIcon' => ( isset( $this->data['icon'] ) ? $this->data['icon'] : 'fa fa-user' ),
+            'icon'    => [
+            'buttonIcon' => $this->getOption( 'icon', BUTTONIZER_DEF_BUTTON_ICON ),
         ],
-            'device' => [
-            'show_mobile'  => ( isset( $this->data['show_mobile'] ) ? $this->data['show_mobile'] : 'true' ),
-            'show_desktop' => ( isset( $this->data['show_desktop'] ) ? $this->data['show_desktop'] : 'true' ),
+            'device'  => [
+            'show_mobile'  => $this->getBoolean( 'show_mobile', BUTTONIZER_DEF_MOBILE_VISIBILITY ),
+            'show_desktop' => $this->getBoolean( 'show_desktop', BUTTONIZER_DEF_DESKTOP_VISIBILITY ),
         ],
-            'label'  => [
-            'label'              => ( isset( $this->data['label'] ) ? $this->data['label'] : '' ),
-            'show_label_desktop' => ( isset( $this->data['show_label_desktop'] ) ? $this->data['show_label_desktop'] : 'always' ),
-            'show_label_mobile'  => ( isset( $this->data['show_label_mobile'] ) ? $this->data['show_label_mobile'] : 'always' ),
+            'label'   => [
+            'label'              => $this->getOption( 'label', '' ),
+            'show_label_desktop' => $this->getOption( 'show_label_desktop', BUTTONIZER_DEF_LABEL_VISIBILITY ),
+            'show_label_mobile'  => $this->getOption( 'show_label_mobile', BUTTONIZER_DEF_LABEL_VISIBILITY ),
         ],
-        ];
-        $data['styling'] = [
-            'label' => [
-            'text'       => ( isset( $this->data['label_color'] ) ? $this->data['label_color'] : '' ),
-            'background' => ( isset( $this->data['label_background_color'] ) ? $this->data['label_background_color'] : '' ),
-            'size'       => (( isset( $this->data['label_font_size'] ) ? $this->data['label_font_size'] : '12' )) . 'px',
-            'radius'     => (( isset( $this->data['label_border_radius'] ) ? $this->data['label_border_radius'] : '3' )) . 'px',
+            'styling' => [
+            'icon'       => [
+            'size' => $this->getNumber( 'icon_size', BUTTONIZER_DEF_BUTTON_ICON_SIZE ) . "px",
         ],
-            'icon'  => [
-            'size'        => (( isset( $this->data['icon_size'] ) && is_numeric( $this->data['icon_size'] ) && $this->data['icon_size'] >= 0 ? $this->data['icon_size'] : '16' )) . "px",
-            'color'       => ( isset( $this->data['icon_color'] ) ? $this->data['icon_color'] : '' ),
-            'interaction' => ( isset( $this->data['icon_color_interaction'] ) ? $this->data['icon_color_interaction'] : '' ),
+            'main_style' => $this->getBoolean( 'use_main_button_style', BUTTONIZER_DEF_USE_MAIN_BUTTON_STYLE ),
+        ],
+            'text'    => [
+            'subject' => $this->getOption( 'text_subject', '' ),
+            'body'    => $this->getOption( 'text_body', '' ),
         ],
         ];
+        // Use own button styling
         
-        if ( isset( $this->data['use_main_button_style'] ) && $this->data['use_main_button_style'] == 'false' ) {
-            $data['styling']['button'] = [
-                'color'       => ( isset( $this->data['background_color'] ) ? $this->data['background_color'] : '' ),
-                'interaction' => ( isset( $this->data['background_color_interaction'] ) ? $this->data['background_color_interaction'] : '' ),
-                'radius'      => (( isset( $this->data['border_radius'] ) ? $this->data['border_radius'] : '50' )) . "%",
+        if ( !$this->getBoolean( 'use_main_button_style', BUTTONIZER_DEF_USE_MAIN_BUTTON_STYLE ) ) {
+            $data['styling'] = [
+                'button' => [
+                'color'       => $this->getOption( 'background_color', BUTTONIZER_DEF_BACKGROUND_COLOR ),
+                'interaction' => $this->getOption( 'background_color_interaction', BUTTONIZER_DEF_BACKGROUND_COLOR_INTERACTION ),
+                'radius'      => $this->getNumber( 'border_radius', BUTTONIZER_DEF_BORDER_RADIUS ) . "%",
+            ],
+                'label'  => [
+                'text'       => $this->getOption( 'label_color', BUTTONIZER_DEF_LABEL_COLOR_TEXT ),
+                'background' => $this->getOption( 'label_background_color', BUTTONIZER_DEF_LABEL_COLOR_BACKGROUND ),
+                'size'       => $this->getOption( 'label_font_size', BUTTONIZER_DEF_LABEL_FONT_SIZE ) . 'px',
+                'radius'     => $this->getOption( 'label_border_radius', BUTTONIZER_DEF_LABEL_BORDER_RADIUS ) . 'px',
+            ],
+                'icon'   => [
+                'color'       => $this->getOption( 'icon_color', BUTTONIZER_DEF_ICON_COLOR ),
+                'interaction' => $this->getOption( 'icon_color_interaction', BUTTONIZER_DEF_ICON_COLOR ),
+                'size'        => $this->getNumber( 'icon_size', BUTTONIZER_DEF_BUTTON_ICON_SIZE ) . "px",
+            ],
             ];
             $data['styling']['border'] = [
-                'width'       => ( isset( $this->data['border_size'] ) ? $this->data['border_size'] : 0 ),
-                'color'       => ( isset( $this->data['border_color'] ) ? $this->data['border_color'] : '' ),
-                'interaction' => ( isset( $this->data['border_color_interaction'] ) ? $this->data['border_color_interaction'] : '' ),
+                'width'       => $this->getNumber( 'border_size', 0 ),
+                'color'       => $this->getOption( 'border_color', '' ),
+                'interaction' => $this->getOption( 'border_color_interaction', '' ),
             ];
         }
         

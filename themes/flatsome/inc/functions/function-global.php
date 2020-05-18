@@ -120,7 +120,12 @@ function flatsome_get_block_id( $post_id ) {
 
   // Get post ID if using post_name as id attribute.
   if ( ! is_numeric( $post_id ) ) {
-    $post_id = $wpdb->get_var( "SELECT ID FROM $wpdb->posts WHERE post_type = 'blocks' AND post_name = '$post_id'" );
+    $post_id = $wpdb->get_var(
+      $wpdb->prepare(
+        "SELECT ID FROM $wpdb->posts WHERE post_type = 'blocks' AND post_name = %s",
+        $post_id
+      )
+    );
   }
 
   // Polylang support.

@@ -35,7 +35,8 @@ class Update
         try {
             $this->registerSettings();
 
-            if((count($this->backupButtons) === 0 || $this->backupButtons === false) && (count($this->backupSchedule) === 0 || $this->backupSchedule === false) && (count($this->backupRules) === 0 || $this->backupRules === false))
+            // If there's no Buttonizer data, new install
+            if(!$this->backupButtons && !$this->backupSchedule && !$this->backupRules)
             {
                 $this->cleanup(true);
                 return; // all OK, new installation :)
@@ -43,7 +44,9 @@ class Update
 
             $this->convertButtons();
             $this->convertTimeSchedules();
-            $this->convertPageRules();
+            if($this->backupRules) {
+                $this->convertPageRules();
+            }
 
             $this->cleanup();
         } catch (\Exception $e) {
@@ -355,7 +358,8 @@ class Update
             'name' => 'First time schedule',
             'id' => $this->timeScheduleId,
             'weekdays' => [],
-            'custom' => []
+            'custom' => [],
+            'dates' => [],
         ];
 
         // Loop through all days
@@ -463,20 +467,183 @@ class Update
     {
         $settings = [];
 
-        $settings['migration_version'] = '2.0';
-        $settings['import_icon_library'] = 'true';
+        $settings['migration_version'] = '2.1';
+        $settings['import_icon_library'] = true;
 
         if($newInstall === false) {
             $settings['google_analytics'] = $this->get15GeneralSettings('google_analytics', '');
             $settings['icon_library'] = 'fontawesome';
             $settings['icon_library_version'] = '4.7.0';
-            $settings['welcome'] = 'true';
+            $settings['welcome'] = true;
         }else{
             $settings['google_analytics'] = '';
             $settings['icon_library'] = 'fontawesome';
             $settings['icon_library_version'] = '5.free';
+             // Add default button data
+            update_option('buttonizer_buttons', [
+                [
+                    'data' => [
+                        'name' => __('New group', 'buttonizer-multifunctional-button'), 
+                        'show_mobile' => BUTTONIZER_DEF_MOBILE_VISIBILITY, 
+                        'show_desktop' => BUTTONIZER_DEF_DESKTOP_VISIBILITY,
+                    ],
+                    'buttons' => [
+                        [
+                            'name' => __('New button', 'buttonizer-multifunctional-button'), 
+                            'show_mobile' => BUTTONIZER_DEF_MOBILE_VISIBILITY, 
+                            'show_desktop' => BUTTONIZER_DEF_DESKTOP_VISIBILITY
+                        ]
+                    ]
+                ]
+            ]);
         }
 
         update_option('buttonizer_settings', $settings);
+    }
+
+    /**
+     * Run update 2.0 to 2.1
+     */
+    public function update20to21()
+    {
+        $this->registerSettings();
+
+        $groups = $this->convertButtons20to21($this->backupButtons);
+        $settings = get_option('buttonizer_settings');
+
+        //backup 2.0.x settings
+        update_option('buttonizer_buttons_backup_20', $this->backupButtons);
+        update_option('buttonizer_buttons_published_20', get_option('buttonizer_buttons_published'));
+        update_option('buttonizer_has_changes_20', get_option('buttonizer_has_changes'));
+        update_option('buttonizer_rules_20', get_option('buttonizer_rules'));
+        update_option('buttonizer_rules_published_20', get_option('buttonizer_rules_published'));
+        update_option('buttonizer_schedules_20', get_option('buttonizer_schedules'));
+        update_option('buttonizer_schedules_published_20', get_option('buttonizer_schedules_published'));
+        update_option('buttonizer_settings_20', get_option('buttonizer_settings'));
+
+        // Set migration version to 2.1
+        $settings["migration_version"] = "2.1";
+        update_option('buttonizer_settings', $settings);
+
+        // Overwrite new settings
+        update_option('buttonizer_buttons', $groups);
+        
+        // If buttonizer was already published, update published.
+        if(get_option('buttonizer_buttons_published')) {
+            $published = $this->convertButtons20to21(get_option('buttonizer_buttons_published'));
+            update_option('buttonizer_buttons_published', $published);
+        }
+
+        // If buttonizer has timeschedules, convert booleans.
+        if(get_option('buttonizer_schedules')) {
+            $schedules =$this->convertSchedules20to21(get_option('buttonizer_schedules'));
+            update_option('buttonizer_schedules', $schedules);
+        }
+
+        // If buttonizer has timeschedules published, convert booleans.
+        if(get_option('buttonizer_schedules_published')) {
+            $schedules_published =$this->convertSchedules20to21(get_option('buttonizer_schedules_published'));
+            update_option('buttonizer_schedules_published', $schedules_published);
+        }
+    }
+
+    /**
+     * Return converted 2.0 schedule settings to 2.1
+     */
+    private function convertSchedules20to21($array) { 
+        $schedules = [];
+
+        foreach($array as $scheduleID) {
+            $scheduleID['end_date'] = date( "d-m-Y", strtotime( $scheduleID['end_date'] ) );
+            $scheduleID['start_date'] = date( "d-m-Y", strtotime( $scheduleID['start_date'] ) );
+
+            $weekdays = [];
+            foreach($scheduleID["weekdays"] as $days) {
+                $days['opened'] = filter_var($days['opened'], FILTER_VALIDATE_BOOLEAN);
+
+                $weekdays[] = $days;
+            }  
+
+            $dates = [];
+            foreach($scheduleID["dates"] as $days) {
+                $days['opened'] = filter_var($days['opened'], FILTER_VALIDATE_BOOLEAN);
+                $days['date'] = date( "d-m-Y", strtotime( $days['date'] ) );
+
+                $dates[] = $days;
+            }  
+
+            $scheduleID['weekdays'] = $weekdays;
+            $scheduleID['dates'] = $dates;
+            
+            $schedules[] = $scheduleID;
+        }
+
+        return $schedules;
+    }
+    
+
+    /**
+     * Return converted 2.0 button settings to 2.1
+     */
+    private function convertButtons20to21($array) {
+        $groups = [];
+
+        foreach ($array as $group)
+        {
+            // // if it has a background image, set background_is_image to true
+            if(!empty($group["data"]["background_image"])) {
+                $group["data"]["background_is_image"] = true;
+            }
+            // If icon is image and image size is not set, max width
+            if(!empty($group["data"]["icon_image"]) && empty($group["data"]["icon_image_size"])) {
+                $group["data"]["icon_image_size"] = "100";
+                $group["data"]["icon_size"] = "100";
+            }
+
+            $buttons = [];
+
+            foreach($group["buttons"] as $button) {
+                // // if it has a background image, set background_is_image to true
+                if(!empty($button["background_image"])) {
+                    $button["background_is_image"] = true;
+                }
+                // If icon is image and image size is not set, max width
+                if(!empty($button["icon_image"]) && empty($button["icon_image_size"])) {
+                    $button["icon_image_size"] = "100";
+                    $button["icon_size"] = "100";
+                }
+                // change all true values to boolean true
+                foreach(array_keys($button, "true", true) as $keys) {
+                    $button[$keys] = true;
+                }
+                // change all false values to boolean false
+                foreach(array_keys($button, "false", true) as $keys) {
+                    $button[$keys] = false;
+                }
+
+                $buttons[] = $button;
+            }
+
+            // change all true values to boolean true
+            foreach(array_keys($group["data"], "true", true) as $keys) {
+                $group["data"][$keys] = true;
+            }
+            // change all false values to boolean false
+            foreach(array_keys($group["data"], "false", true) as $keys) {
+                $group["data"][$keys] = false;
+            }
+
+            // Since we change how enabling of Exit Intent works on 2.1. Disable if exit intent is disabled
+            if($group["data"]["exit_intent"] === false) {
+                $group["data"]["exit_intent_trigger_leaving_window"] = false;
+                $group["data"]["exit_intent_trigger_inactive"] = false;
+            }
+
+            $group["buttons"] = $buttons;
+
+            $groups[] = $group;
+        }
+
+        return $groups;
     }
 }

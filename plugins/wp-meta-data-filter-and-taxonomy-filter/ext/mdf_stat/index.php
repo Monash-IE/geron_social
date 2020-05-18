@@ -969,7 +969,7 @@ final class MDF_SEARCH_STAT {
                                             :time)";
 
                             foreach ($res as $row) {
-                                var_dump($row);
+
                                 $stmt = $this->pdo->prepare($sql);
                                 $stmt->bindParam(':hash', $row['hash'], PDO::PARAM_STR);
                                 $stmt->bindParam(':user_ip', $row['user_ip'], PDO::PARAM_STR);

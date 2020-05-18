@@ -505,6 +505,8 @@ class MetaDataFilterShortcodes extends MetaDataFilterCore
     {
         extract(shortcode_atts(array(
             'shortcode' => 'products',
+            'load_more'=>0,
+            'load_more_text'=>__("Load more",'meta-data-filter'),
             'columns' => '4',
             'animate' => 0,
             'animate_target' => '#mdf_results_by_ajax'//body
@@ -528,8 +530,13 @@ class MetaDataFilterShortcodes extends MetaDataFilterCore
           $shortcode_txt.= $content . '[' . '/' . $atts['shortcode'] . ']';
           }
          */
+        
+        $class="mdf_standard_paginate";
+        if($load_more){
+           $class="mdf_load_more"; 
+        }
 
-        return "<div id='mdf_results_by_ajax' data-animate='{$animate}' data-animate-target='{$animate_target}' data-shortcode='{$shortcode}'>" . do_shortcode("[$shortcode]") . "</div>";
+        return "<div id='mdf_results_by_ajax' class='{$class}' data-animate='{$animate}' data-load_text='{$load_more_text}' data-animate-target='{$animate_target}' data-shortcode='{$shortcode}'>" . do_shortcode("[$shortcode]") . "</div>";
     }
 
     public static function woocommerce_before_shop_loop()
@@ -561,7 +568,7 @@ class MetaDataFilterShortcodes extends MetaDataFilterCore
             'orderby' => self::$default_order_by,
             'order' => self::$default_order,
             'page' => 1,
-            'per_page' => self::get_setting('results_per_page'),
+            'per_page' => 0,
             'pagination' => 'b',
             'meta_data_filter_cat' => 0,
             'panel_id' => 0,
@@ -723,7 +730,7 @@ class MetaDataFilterShortcodes extends MetaDataFilterCore
          */
         //print_r($wr);
         $products = new WP_Query($wr);    
-        //$products = new WP_QueryMDFCache($wr);
+        //$products = new WP_QueryMDFCache($wr);//tests
         $_REQUEST['meta_data_filter_found_posts'] = $products->found_posts;
         $_REQUEST['mdf_panel_id'] = $panel_id;
         //***
@@ -810,7 +817,7 @@ class MetaDataFilterShortcodes extends MetaDataFilterCore
             'page' => 1,
             'template' => '',
             'post_type' => 'post',
-            'per_page' => self::get_setting('results_per_page'),
+            'per_page' => 0,
             'pagination' => 'b',
             'meta_data_filter_cat' => 0,
             'taxonomies' => '',

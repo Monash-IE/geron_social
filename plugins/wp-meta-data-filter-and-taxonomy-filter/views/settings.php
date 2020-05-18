@@ -91,7 +91,7 @@
                         <tr valign="top">
                             <th scope="row" class="mdf_for_premium_label"><label><?php _e("Results per page", 'meta-data-filter') ?></label></th>
                             <td>
-                                <input type="text" class="regular-text" placeholder="in premium version" value="" readonly="">
+                                <input type="text" class="regular-text" readonly="" placeholder="in premium version" value="" name="meta_data_filter_settings[results_per_page]">
                                 <p class="description"><?php _e("Leave this field empty if you want to use wordpress or your theme settings.", 'meta-data-filter') ?></p>
 
                             </td>
@@ -115,14 +115,14 @@
                                 $skins = array(
                                     'default' => __('Default', 'meta-data-filter'),
                                     'plainoverlay' => __('Plainoverlay', 'meta-data-filter'),
-                                    'loading-balls' => __('Loading balls - experimental', 'meta-data-filter'),
-                                    'loading-bars' => __('Loading bars - experimental', 'meta-data-filter'),
-                                    'loading-bubbles' => __('Loading bubbles - experimental', 'meta-data-filter'),
-                                    'loading-cubes' => __('Loading cubes - experimental', 'meta-data-filter'),
-                                    'loading-cylon' => __('Loading cyclone - experimental', 'meta-data-filter'),
-                                    'loading-spin' => __('Loading spin - experimental', 'meta-data-filter'),
-                                    'loading-spinning-bubbles' => __('Loading spinning bubbles - experimental', 'meta-data-filter'),
-                                    'loading-spokes' => __('Loading spokes - experimental', 'meta-data-filter'),
+                                    'loading-balls' => __('Loading balls', 'meta-data-filter'),
+                                    'loading-bars' => __('Loading bars', 'meta-data-filter'),
+                                    'loading-bubbles' => __('Loading bubbles', 'meta-data-filter'),
+                                    'loading-cubes' => __('Loading cubes', 'meta-data-filter'),
+                                    'loading-cylon' => __('Loading cyclone', 'meta-data-filter'),
+                                    'loading-spin' => __('Loading spin', 'meta-data-filter'),
+                                    'loading-spinning-bubbles' => __('Loading spinning bubbles', 'meta-data-filter'),
+                                    'loading-spokes' => __('Loading spokes', 'meta-data-filter'),
                                 );
                                 if (!isset($data['overlay_skin'])) {
                                     $data['overlay_skin'] = 'default';
@@ -174,7 +174,7 @@
                         <tr valign="top">
                             <th scope="row" class="mdf_for_premium_label"><label><?php _e("Loading text", 'meta-data-filter') ?></label></th>
                             <td>
-                                <input type="text" class="regular-text" value="" placeholder="in premium version" readonly="">
+                                <input type="text" class="regular-text" readonly="" value="" placeholder="in premium version" name="meta_data_filter_settings[loading_text]">
                                 <p class="description"><?php _e("Example: One Moment ...", 'meta-data-filter') ?></p>
                                 <br />
                                 <hr />
@@ -255,7 +255,7 @@
                         <tr valign="top">
                             <th scope="row" class="mdf_for_premium_label"><label><?php _e("Toggle open sign", 'meta-data-filter') ?></label></th>
                             <td>
-                                <input type="text" class="regular-text" value="+" placeholder="in premium version" readonly="">
+                                <input type="text" class="regular-text" value="+" readonly="" name="meta_data_filter_settings[toggle_open_sign]">
                                 <p class="description"><?php _e("Toggle open sign on front widget while using toggles for sections.", 'meta-data-filter') ?></p>
                             </td>
                         </tr>
@@ -264,7 +264,7 @@
                         <tr valign="top">
                             <th scope="row" class="mdf_for_premium_label"><label><?php _e("Toggle close sign", 'meta-data-filter') ?></label></th>
                             <td>
-                                <input type="text" class="regular-text" value="-" placeholder="in premium version" readonly="">
+                                <input type="text" class="regular-text" value="-" readonly="" name="meta_data_filter_settings[toggle_close_sign]">
                                 <p class="description"><?php _e("Toggle close sign on front widget while using toggles for sections.", 'meta-data-filter') ?></p>
                             </td>
                         </tr>
@@ -1261,7 +1261,7 @@
 
 
                                     <li>
-                                        <a href="http://codecanyon.net/item/popping-sidebars-and-widgets-for-wordpress/8688220?ref=realmag777" target="_blank">Popping Sidebars and Widgets for WordPress</a><br />
+                                        <a href="http://codecanyon.pluginus.net/item/popping-sidebars-and-widgets-for-wordpress/8688220" target="_blank">Popping Sidebars and Widgets for WordPress</a><br />
                                         <p class="description"><?php _e(" Create popping custom responsive layouts with sidebars and widgets in just a few clicks. Choose from variety of overlays, positioning, page visibility, active period, open/close events, custom styling, custom sidebars and much more.", 'meta-data-filter') ?></p>
                                     </li>
 
@@ -1312,21 +1312,21 @@
 
         <h3>READ: <a href="https://wp-filter.com/difference-free-premium-versions-plugin/" target="_blank">Difference between FREE and PREMIUM versions of the plugin</a></h3>
 
-        <table style="width: 100%;">
+         <table style="width: 100%;">
             <tbody>
                 <tr>
                     <td style="width: 25%;">
                         <h3 style="color: red;">UPGRADE to Full version:</h3>
-                        <a href="http://wp-filter.com/a/buy" alt="Get the plugin premium version" target="_blank"><img src="<?php echo self::get_application_uri() ?>images/mdtf_banner.jpg" alt="" style="width: 100%" /></a>
+                        <a href="https://wp-filter.com/a/buy" alt="Get the plugin premium version" target="_blank"><img src="<?php echo self::get_application_uri() ?>images/mdtf_banner.jpg" alt="" style="width: 100%" /></a>
                     </td>
                     <td style="width: 25%;">
                         <h3>WooCommerce Currency Switcher:</h3>
-                        <a href="http://codecanyon.net/item/woocommerce-currency-switcher/8085217?ref=realmag777" target="_blank"><img src="<?php echo self::get_application_uri() ?>images/woocs_banner.png" style="width: 100%" alt="WOOCS - WooCommerce Currency Switcher" /></a>
+                        <a href="https://currency-switcher.com/" target="_blank"><img src="<?php echo self::get_application_uri() ?>images/woocs_banner.png" style="width: 100%" alt="WOOCS - WooCommerce Currency Switcher" /></a>
                     </td>
 
                     <td style="width: 25%;">
                         <h3>WooCommerce Products Filter:</h3>
-                        <a href="http://codecanyon.net/item/woof-woocommerce-products-filter/11498469?ref=realmag777" target="_blank"><img src="<?php echo self::get_application_uri() ?>images/woof_banner.png" alt="WOOF - WooCommerce Products Filter" style="width: 100%" /></a>
+                        <a href="https://products-filter.com/" target="_blank"><img src="<?php echo self::get_application_uri() ?>images/woof_banner.png" alt="WOOF - WooCommerce Products Filter" style="width: 100%" /></a>
                     </td>
 
                     <td style="width: 25%;">
@@ -1337,8 +1337,7 @@
                 </tr>
             </tbody>
         </table>
-
-
+        
     <?php endif; ?>
 
     <hr />

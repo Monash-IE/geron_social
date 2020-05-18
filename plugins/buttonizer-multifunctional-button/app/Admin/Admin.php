@@ -19,6 +19,8 @@ Copyright 2017 Buttonizer
 */
 namespace Buttonizer\Admin;
 
+// Require defaults
+require_once BUTTONIZER_DIR . '/app/Defaults.php';
 # No script kiddies
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 class Admin
@@ -29,7 +31,23 @@ class Admin
     public function __construct()
     {
         // Let's wait for Wordpress to initialize... Otherwise we are way to early
-        add_action( 'init', array( &$this, 'wordpress_initialized' ) );
+        add_action( 'init', [ $this, 'wordpress_initialized' ] );
+        // // Lets do some admin stuff for Buttonizer
+        add_action( 'admin_init', [ $this, 'adminPages' ] );
+        //If it's not using a permalink structure, add notice
+        if ( !get_option( 'permalink_structure' ) ) {
+            add_action( 'admin_notices', [ $this, 'permalink_admin_notice' ] );
+        }
+    }
+    
+    /**
+     * Plain permalink is used
+     */
+    function permalink_admin_notice()
+    {
+        echo  '<div class="notice notice-error">
+            <p><b>Buttonizer:</b> ' . __( 'A custom permalink structure is required for Buttonizer to work.', 'buttonizer-multifunctional-button' ) . ' <a href="' . admin_url( 'options-permalink.php' ) . '">' . __( 'Go to permalink structure settings.', 'buttonizer-multifunctional-button' ) . '</a></p>
+        </div>' ;
     }
     
     /**
@@ -37,10 +55,8 @@ class Admin
      */
     public function wordpress_initialized()
     {
+        // Add Buttonizer to the Admin menu
         $this->pluginAdminMenu();
-        if ( is_admin() && (current_user_can( 'editor' ) || current_user_can( 'administrator' )) ) {
-            add_action( 'wp_ajax_buttonizer_backend', [ &$this, 'ajaxHandler' ] );
-        }
     }
     
     /**
@@ -54,7 +70,8 @@ class Admin
             'Buttonizer',
             'manage_options',
             'Buttonizer',
-            [ &$this, 'plugin_options_page' ],
+            function () {
+        },
             plugins_url( '/assets/images/wp-icon.png', BUTTONIZER_PLUGIN_DIR ),
             81
         );
@@ -62,149 +79,96 @@ class Admin
         add_submenu_page(
             'Buttonizer',
             'Settings',
-            __( 'Settings' ),
+            __( 'Settings', 'buttonizer-multifunctional-button' ),
             'manage_options',
-            'admin.php?page=Buttonizer#open-settings'
+            'admin.php?page=Buttonizer#/settings'
         );
         // Plugin information, add links
         add_filter( "plugin_action_links_" . plugin_basename( BUTTONIZER_PLUGIN_DIR ), function ( $aLinks ) {
             $aButtonizerLinks = [
-                '<a href="' . admin_url( 'admin.php?page=Buttonizer-contact' ) . '">I need support</a><br />',
-                '<a href="https://community.buttonizer.pro/" target="_blank">Community forums</a>',
-                '<a href="' . admin_url( 'admin.php?page=Buttonizer' ) . '">Manage buttons</a>',
-                '<a href="' . admin_url( 'admin.php?page=Buttonizer#open-settings' ) . '">Settings</a>'
+                '<a href="' . admin_url( 'admin.php?page=Buttonizer-contact' ) . '">' . __( 'I need support', 'buttonizer-multifunctional-button' ) . '</a><br />',
+                '<a href="https://community.buttonizer.pro/" target="_blank">' . __( 'Community forums', 'buttonizer-multifunctional-button' ) . '</a>',
+                '<a href="' . admin_url( 'admin.php?page=Buttonizer' ) . '">' . __( 'Manage buttons', 'buttonizer-multifunctional-button' ) . '</a>',
+                '<a href="' . admin_url( 'admin.php?page=Buttonizer#/settings' ) . '">' . __( 'Settings', 'buttonizer-multifunctional-button' ) . '</a>'
             ];
             return array_merge( $aLinks, $aButtonizerLinks );
         } );
     }
     
     /**
+     * Remove stylesheets when on Buttonizer page
+     */
+    public function adminPages()
+    {
+        // Buttonizer community
+        
+        if ( isset( $_GET['page'] ) && $_GET['page'] === 'Buttonizer-wp-support-forum' ) {
+            // Hide some stuff
+            wp_redirect( "https://community.buttonizer.pro/?referral=buttonizer-plugin-menu" );
+            exit;
+        }
+        
+        // Register Buttonizer admin template
+        
+        if ( isset( $_GET['page'] ) && $_GET['page'] === 'Buttonizer' && !ButtonizerLicense()->is_activation_mode() ) {
+            $this->getPluginAdminPage();
+            exit;
+        }
+    
+    }
+    
+    /**
      * Get media and add scripts/styles that Buttonizer uses
      */
-    public function getPluginScriptStyle()
+    public function getPluginAdminPage()
     {
+        // Add WordPress admin-header thing
+        header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
+        add_filter( 'show_admin_bar', '__return_false' );
+        remove_all_actions( 'wp_head' );
+        remove_all_actions( 'wp_print_styles' );
+        remove_all_actions( 'wp_print_head_scripts' );
+        remove_all_actions( 'wp_footer' );
+        remove_all_actions( 'wp_enqueue_scripts' );
+        wp_deregister_script( [ 'admin-bar' ] );
+        wp_deregister_style( [ 'admin-bar' ] );
         // Require media manager
         wp_enqueue_media();
-        // Require wordpress style
-        wp_enqueue_style( [
-            'wp-color-picker',
-            'jquery-ui-datepicker',
-            'dashicons',
-            'common',
-            'dashboard',
-            'forms',
-            'buttons',
-            'admin-menu'
-        ] );
-        // Require wordpress scripts
-        wp_enqueue_script( [
-            'jquery',
-            'wp-color-picker',
-            'jquery-ui-slider',
-            'jquery-ui-datepicker'
-        ], false, true );
-        wp_enqueue_script( 'buttonizer-bundle', plugins_url( '/assets/bundle.js?v=' . md5( BUTTONIZER_VERSION ), BUTTONIZER_PLUGIN_DIR ), [ 'jquery' ] );
-        wp_enqueue_style( 'buttonizer-css', plugins_url( '/assets/dashboard.css?v=' . md5( BUTTONIZER_VERSION ), BUTTONIZER_PLUGIN_DIR ) );
+        $styles = '/assets/dashboard.css';
         $path = '/assets/dashboard.min.js';
         wp_register_script(
             'buttonizer_admin_js',
             plugins_url( $path . '?v=' . md5( BUTTONIZER_VERSION ), BUTTONIZER_PLUGIN_DIR ),
-            [ 'jquery', 'buttonizer-bundle' ],
+            [],
             false,
             true
         );
+        // Require wordpress style
+        wp_enqueue_style( 'buttonizer-css', plugins_url( $styles . '?v=' . md5( BUTTONIZER_VERSION ), BUTTONIZER_PLUGIN_DIR ) );
+        register_setting( 'buttonizer', 'buttonizer_settings' );
+        $settings = get_option( 'buttonizer_settings' );
         wp_localize_script( 'buttonizer_admin_js', 'buttonizer_admin', [
-            'ajax'     => admin_url( 'admin-ajax.php' ),
-            'admin'    => admin_url( 'admin.php' ),
-            'version'  => BUTTONIZER_VERSION,
-            'dir'      => plugins_url( '', BUTTONIZER_PLUGIN_DIR ),
-            'assets'   => plugins_url( '/assets', BUTTONIZER_PLUGIN_DIR ),
-            'security' => wp_create_nonce( "save_buttonizer" ),
+            'ajax'                          => admin_url( 'admin-ajax.php' ),
+            'admin'                         => admin_url( 'admin.php' ),
+            'can_send_errors'               => ( isset( $settings['can_send_errors'] ) ? $settings['can_send_errors'] : false ),
+            'api'                           => get_rest_url() . 'buttonizer',
+            'nonce'                         => wp_create_nonce( 'wp_rest' ),
+            'version'                       => BUTTONIZER_VERSION,
+            'dir'                           => plugins_url( '', BUTTONIZER_PLUGIN_DIR ),
+            'assets'                        => plugins_url( '/assets', BUTTONIZER_PLUGIN_DIR ),
+            'security'                      => wp_create_nonce( "save_buttonizer" ),
+            'defaults'                      => BUTTONIZER_DEFAULTS,
+            'fontawesome_current_version'   => FONTAWESOME_CURRENT_VERSION,
+            'fontawesome_current_integrity' => FONTAWESOME_CURRENT_INTEGRITY,
+            'permalink_structure'           => get_option( 'permalink_structure' ),
         ] );
         // Buttonizer translations
         $set = ( new Translations() )->get();
         wp_localize_script( 'buttonizer_admin_js', 'buttonizer_translations', $set );
         wp_enqueue_script( 'buttonizer_admin_js' );
-    }
-    
-    /**
-     * Default setting page template
-     */
-    public function plugin_options_page()
-    {
-        $this->getPluginScriptStyle();
-        echo  '<div class="buttonizer-admin-overlay">
-            <br /><br />
-            <b>' . __( 'Buttonizer is loading...', 'buttonizer-multifunctional-button' ) . '</b><br />
-            ' . sprintf(
-            // Translators: First link goes to our knowledge base, the second link goes to the admin panel.
-            __( 'When Buttonizer does not start, <a %1$s>click here</a> to find out what is going wrong or <a %2$s>click here</a> to return to the WordPress admin dashboard.', 'buttonizer-multifunctional-button' ),
-            'href="https://community.buttonizer.pro/knowledgebase/28" target="_blank"',
-            'href="' . admin_url() . '"'
-        ) . '
-
-            <script type="application/javascript">
-                setTimeout(function() {
-                  document.querySelector(".buttonizer-admin-overlay").innerHTML += "<div style=\'margin-top: 40px;\'>' . __( 'When you have a slow internet connection or slow webserver, give it a moment...', 'buttonizer-multifunctional-button' ) . '</div>";
-                }, 10000);
-            </script>
-
-            <noscript>
-                <div class="buttonizer-no-script">' . __( 'Hi there! JavaScript is disabled in your browser. Please consider to enable JavaScript in your browser to use Buttonizer.', 'buttonizer-multifunctional-button' ) . '</div>
-            </noscript>
-        </div>' ;
-    }
-    
-    /**
-     * Overwrite admin page
-     */
-    public function showButtonizer()
-    {
-        // Enqueue style and scripts
-        $this->getPluginScriptStyle();
-        require __DIR__ . '/templates/Admin.php';
-    }
-    
-    /**
-     * Ajax request handler
-     */
-    public function ajaxHandler()
-    {
-        if ( !isset( $_GET['action'] ) || $_GET['action'] !== 'buttonizer_backend' || !isset( $_GET['item'] ) ) {
-            return;
-        }
-        // Get item
-        $ajaxFileRequest = urldecode( $_GET['item'] );
-        // Do not get further then this
-        
-        if ( strpos( $ajaxFileRequest, '..' ) !== false ) {
-            echo  json_encode( [
-                'plugin'  => 'Buttonizer',
-                'status'  => 'error',
-                'message' => 'You are not allowed to do this. ',
-            ] ) ;
-            wp_die();
-        }
-        
-        // Replace dots to nothing
-        $ajaxFileRequest = str_replace( "..", "", $ajaxFileRequest );
-        // Check file exists
-        
-        if ( file_exists( BUTTONIZER_DIR . '/app/Admin/Ajax/' . $ajaxFileRequest . '.php' ) ) {
-            // Create class path
-            $className = '\\Buttonizer\\Admin\\Ajax\\' . str_replace( '/', '\\', $ajaxFileRequest );
-            // Open file
-            require BUTTONIZER_DIR . '/app/Admin/Ajax/' . $ajaxFileRequest . '.php';
-            new $className();
-        } else {
-            echo  json_encode( [
-                'plugin'  => 'Buttonizer',
-                'status'  => 'error',
-                'message' => 'Ajax request file not found.',
-            ] ) ;
-        }
-        
-        wp_die();
+        // Import our own template
+        require_once BUTTONIZER_DIR . '/app/Admin/template.php';
+        exit;
     }
 
 }

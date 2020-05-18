@@ -187,7 +187,7 @@ if ($show_widget):
             <input type="hidden" name="mdf[mdf_widget_options][meta_data_filter_cat]" value="<?php echo $meta_data_filter_cat ?>" />
             <input type="hidden" name="mdf[mdf_widget_options][show_items_count_dynam]" value="<?php echo($instance['show_items_count_dynam'] == 'true' ? 1 : 0) ?>" />
             <input type="hidden" name="mdf[mdf_widget_options][taxonomies_options_post_recount_dyn]" value="<?php echo($instance['taxonomies_options_post_recount_dyn'] == 'true' ? 1 : 0) ?>" />
-            <input type="hidden" name="mdf[mdf_widget_options][taxonomies_options_hide_terms_0]" value="<?php echo($instance['taxonomies_options_hide_terms_0'] == 'true' ? 1 : 0) ?>" />
+            <input type="hidden" name="mdf[mdf_widget_options][taxonomies_options_hide_terms_0]" value="0" />
             <input type="hidden" name="mdf[mdf_widget_options][hide_meta_filter_values]" value="<?php echo($instance['hide_meta_filter_values'] == 'true' ? 1 : 0) ?>" />
             <input type="hidden" name="mdf[mdf_widget_options][hide_tax_filter_values]" value="<?php echo($instance['hide_tax_filter_values'] == 'true' ? 1 : 0) ?>" />
             <input type="hidden" name="mdf[mdf_widget_options][search_result_page]" value="<?php echo((isset($instance['search_result_page']) AND ! empty($instance['search_result_page'])) ? $instance['search_result_page'] : '') ?>" />
@@ -205,7 +205,7 @@ if ($show_widget):
 
             <?php if (!$instance['show_filter_button_after_each_block'] AND ! $instance['act_without_button'] AND ! $ajax_results): ?>
                 <div class="mdf_submit_button_container">
-                    <input type="submit" class="button mdf_button" name="" value="<?php echo esc_html($instance['title_for_filter_button']); ?>" />
+                    <input type="submit" class="button mdf_button" name="" value="<?php echo __('Filter', 'meta-data-filter') ?>" />
                 </div>
             <?php endif; ?>
 
@@ -247,7 +247,7 @@ if ($show_widget):
 
         <script type="text/javascript">
             jQuery(function () {
-                mdf_init_search_form("<?php echo $uniqid ?>", "<?php echo $instance['meta_data_filter_slug'] ?>", "<?php echo $search_url ?>", <?php echo($instance['act_without_button'] === 'true' ? 1 : 0) ?>, <?php echo($instance['ajax_items_recount'] === 'true' ? 1 : 0) ?>, 0);
+                mdf_init_search_form("<?php echo $uniqid ?>", "<?php echo $instance['meta_data_filter_slug'] ?>", "<?php echo $search_url ?>", 0, <?php echo($instance['ajax_items_recount'] === 'true' ? 1 : 0) ?>, 0);
             });
         </script>
 

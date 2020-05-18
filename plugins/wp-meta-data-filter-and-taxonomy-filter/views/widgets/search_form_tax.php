@@ -223,11 +223,9 @@ $settings = self::get_settings ();
 <p class="mdf_taxonomies_options_show_count" <?php if( ! $instance['taxonomies_options_show_count'] ): ?>style="display: none;"<?php endif; ?>>
     <?php
     $checked = "";
-    if( $instance['taxonomies_options_hide_terms_0'] == 'true' ) {
-        $checked = 'checked="checked"';
-    }
+   
     ?>
-    <input type="checkbox" id="<?php echo $widget->get_field_id ('taxonomies_options_hide_terms_0'); ?>" disabled="" /> (<a href="https://wp-filter.com/difference-free-premium-versions-plugin/" target="_blank">premium</a>)
+    <input type="checkbox" disabled="" id="<?php echo $widget->get_field_id ('taxonomies_options_hide_terms_0'); ?>" name="<?php echo $widget->get_field_name ('taxonomies_options_hide_terms_0'); ?>" value="false" <?php echo $checked; ?> />
     <label class="mdf_for_premium_label" for="<?php echo $widget->get_field_id ('taxonomies_options_hide_terms_0'); ?>"><?php _e ('Hide terms where count of items is 0', 'meta-data-filter') ?>:</label>
 </p>
 
@@ -250,10 +248,10 @@ $settings = self::get_settings ();
     <?php
     $checked = "";
     if( $instance['act_without_button'] == 'true' ) {
-        $checked = 'checked="checked"';
+        
     }
     ?>
-    <input type="checkbox" id="<?php echo $widget->get_field_id ('act_without_button'); ?>" disabled="" /> (<a href="https://wp-filter.com/difference-free-premium-versions-plugin/" target="_blank">premium</a>)
+    <input type="checkbox" disabled="" id="<?php echo $widget->get_field_id ('act_without_button'); ?>" name="<?php echo $widget->get_field_name ('act_without_button'); ?>" value="false" <?php echo $checked; ?> />
     <label class="mdf_for_premium_label" for="<?php echo $widget->get_field_id ('act_without_button'); ?>"><?php _e ('Auto submit form', 'meta-data-filter') ?>:</label>
 </p>
 
@@ -300,7 +298,7 @@ $settings = self::get_settings ();
 
 <p>
     <label class="mdf_for_premium_label" for="<?php echo $widget->get_field_id ('title_for_filter_button'); ?>"><?php _e ('Title for filter button', 'meta-data-filter') ?>:</label>
-    <input class="widefat" type="text" id="<?php echo $widget->get_field_id ('title_for_filter_button'); ?>" value="" readonly="" />
+    <input class="widefat" type="text" id="<?php echo $widget->get_field_id ('title_for_filter_button'); ?>" name="<?php echo $widget->get_field_name ('title_for_filter_button'); ?>" readonly="" value="" />
 </p>
 
 <p>

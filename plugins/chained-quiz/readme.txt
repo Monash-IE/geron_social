@@ -94,7 +94,9 @@ Thanks to Arun for contributions to the plugin security.
 
 == Frequently Asked Questions ==
 
-None yet, please ask in the forum
+= I tried to use a contact form at the end of the quiz but it does not work =
+
+The final screen is loaded by Ajax so some contact and other forms which use complex JavaScript will not work. You may need to search for a different form plugin which does work when the page is loaded by Ajax. If you can't change the plugin that you use, then provide a link at the end of the quiz to a regular post or page where the form is published.
 
 == Screenshots ==
 

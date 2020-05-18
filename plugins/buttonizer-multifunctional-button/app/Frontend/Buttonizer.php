@@ -28,7 +28,7 @@ class Buttonizer
     /**
      * Buttons constructor.
      */
-    public function __construct()
+    public function __construct( $noAjax = false )
     {
         if ( isset( $_GET['preview'] ) && $_GET['preview'] === '1' && (current_user_can( 'editor' ) || current_user_can( 'administrator' )) ) {
             self::$published = '';
@@ -97,15 +97,12 @@ class Buttonizer
     }
     
     /**
-     * @param $message
+     * @param array $message
      * @return bool
      */
-    public static function addEvent( $message )
+    public static function addEvent( $messageData )
     {
-        self::$logs[] = [
-            'type'    => 'event',
-            'message' => $message,
-        ];
+        self::$logs[] = $messageData;
         return true;
     }
     

@@ -7,7 +7,7 @@ $settings = MetaDataFilterCore::get_settings();
     var mdf_tmp_order = 0;
     var mdf_tmp_orderby = 0;
     //+++
-    var lang_one_moment = "<?php echo((isset($settings['loading_text']) AND ! empty($settings['loading_text'])) ? $settings['loading_text'] : __("One Moment ...", 'meta-data-filter')); ?>";
+    var lang_one_moment = "<?php echo __("One Moment ...", 'meta-data-filter'); ?>";
     var mdf_lang_loading = "<?php _e("Loading ...", 'meta-data-filter') ?>";
     var mdf_lang_cancel = "<?php _e("Cancel", 'meta-data-filter') ?>";
     var mdf_lang_close = "<?php _e("Close", 'meta-data-filter') ?>";
@@ -125,8 +125,8 @@ if (is_home() OR is_front_page())
 
     var mdf_sort_order = "<?php echo(isset($_GET['order']) ? MetaDataFilterCore::escape($_GET['order']) : self::$default_order) ?>";
     var mdf_order_by = "<?php echo(isset($_GET['order_by']) ? MetaDataFilterCore::escape($_GET['order_by']) : self::$default_order_by) ?>";
-    var mdf_toggle_close_sign = "<?php _e(MetaDataFilterCore::get_setting('toggle_close_sign') ? MetaDataFilterCore::get_setting('toggle_close_sign') : '-') ?>";
-    var mdf_toggle_open_sign = "<?php _e(MetaDataFilterCore::get_setting('toggle_open_sign') ? MetaDataFilterCore::get_setting('toggle_open_sign') : '+') ?>";
+    var mdf_toggle_close_sign = "-";
+    var mdf_toggle_open_sign = "+";
     var tab_slideout_icon = "<?php echo(MetaDataFilterCore::get_setting('tab_slideout_icon') ? MetaDataFilterCore::get_setting('tab_slideout_icon') : MetaDataFilterCore::get_application_uri() . 'images/icon_button_search.png') ?>";
     var tab_slideout_icon_w = "<?php echo(MetaDataFilterCore::get_setting('tab_slideout_icon_w') ? MetaDataFilterCore::get_setting('tab_slideout_icon_w') : 146) ?>";
     var tab_slideout_icon_h = "<?php echo(MetaDataFilterCore::get_setting('tab_slideout_icon_h') ? MetaDataFilterCore::get_setting('tab_slideout_icon_h') : 131) ?>";

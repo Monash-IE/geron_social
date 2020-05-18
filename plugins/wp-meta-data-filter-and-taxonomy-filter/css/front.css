@@ -566,7 +566,7 @@ label.mdf_taxonomy_checked{
 
 
 .mdf_label_item:hover,
- .mdf_label_item.checked {
+.mdf_label_item.checked {
     background-color: #34495e;
     border-color: #34495e;
 }
@@ -610,9 +610,9 @@ label.mdf_taxonomy_checked{
     text-align: center;
     font-weight: bold;
 }
-//mdf_tax_label_item
+
 .mdf_tax_label_item:hover,
- .mdf_tax_label_item.checked {
+.mdf_tax_label_item.checked {
     background-color: #34495e;
     border-color: #34495e;
 }
@@ -649,21 +649,34 @@ label.mdf_taxonomy_checked{
 }
 
 .mdf_panel_container .mdf_terms_panel{
-        background: none;
-        border: 3px solid grey;
-        padding: 5px; 
-        margin-left: 10px;
-        margin-top: 10px;
-        display: inline-block;
+    background: none;
+    border: 3px solid grey;
+    padding: 5px; 
+    margin-left: 10px;
+    margin-top: 10px;
+    display: inline-block;
 }
-    .mdf_panel_remove{
-        margin-left: 5px;
-        cursor: pointer;
-    }
-    .mdf_remove_icon img{
-        height: 16px;
-    }
-    
-    .mdf_shortcode_skin_col1 .mdf_range_select_cont select {
+.mdf_panel_remove{
+    margin-left: 5px;
+    cursor: pointer;
+}
+.mdf_remove_icon img{
+    height: 16px;
+}
+
+.mdf_shortcode_skin_col1 .mdf_range_select_cont select {
     float: inherit !important;
-   }
+}
+
+#mdf_results_by_ajax.mdf_load_more .tw-pagination li{
+    display:none;
+    content: "\f463";
+}
+#mdf_results_by_ajax.mdf_load_more .tw-pagination{
+    text-align: center;
+}
+#mdf_results_by_ajax.mdf_load_more .tw-pagination li .dashicons-update{
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
